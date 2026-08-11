@@ -56,22 +56,29 @@
 </div>
 
 <script>
-  // TU URL DE GOOGLE APPS SCRIPT
   const API_URL = "https://script.google.com/macros/s/AKfycbziuS5GZgsd_fTpAiQUNIij7TU2d9d78QanR88SxevTqcyi6_6zO39OJXHRGBa8XJstHA/exec";
   let catalogo = [];
 
-  async function iniciarRemision() {
+  function iniciarRemision() {
     document.getElementById('btnNueva').classList.add('hidden');
     document.getElementById('formRemision').classList.remove('hidden');
 
-    try {
-      const res = await fetch(API_URL, { redirect: 'follow' });
-      catalogo = await res.json();
-      agregarFila();
-    } catch (err) {
-      alert('Error al cargar el catálogo de productos.');
-      console.error(err);
-    }
+    // Carga de productos usando JSONP (evita el error CORS)
+    window.cargarCatalogoCallback = function(data) {
+      if (Array.isArray(data)) {
+        catalogo = data;
+        agregarFila();
+      } else {
+        alert("Error desde el servidor: " + (data.message || "Desconocido"));
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = `${API_URL}?callback=cargarCatalogoCallback`;
+    script.onerror = function() {
+      alert('Error al conectar con la base de datos de Google.');
+    };
+    document.body.appendChild(script);
   }
 
   function agregarFila() {
