@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Remisiones</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 20px; }
+    .container { max-width: 850px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #2c3e50; margin-top: 0; }
+    .btn { background: #3498db; color: white; border: none; padding: 10px 18px; font-size: 14px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn:hover { background: #2980b9; }
+    .btn-success { background: #2ecc71; margin-top: 15px; }
+    .btn-success:hover { background: #27ae60; }
+    .hidden { display: none; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #e1e8ed; padding: 10px; text-align: left; }
+    th { background: #f8f9fa; color: #333; }
+    input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    .total-box { text-align: right; font-size: 20px; font-weight: bold; margin: 20px 0; color: #2c3e50; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Control de Remisiones</h2>
+  <button id="btnNueva" class="btn" onclick="iniciarRemision()">+ Nueva Remisión</button>
+
+  <form id="formRemision" class="hidden" onsubmit="guardarRemision(event)">
+    <div style="margin-top: 15px;">
+      <label><strong>Cliente:</strong></label>
+      <input type="text" id="cliente" required placeholder="Nombre del cliente o empresa" style="margin-top: 5px;">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">Producto</th>
+          <th style="width: 35%;">Descripción</th>
+          <th style="width: 12%;">Precio</th>
+          <th style="width: 10%;">Cant.</th>
+          <th style="width: 13%;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody id="filas"></tbody>
+    </table>
+
+    <button type="button" class="btn" onclick="agregarFila()">+ Agregar Producto</button>
+
+    <div class="total-box">
+      Total: $<span id="totalText">0.00</span>
+    </div>
+
+    <button type="submit" id="btnGuardar" class="btn btn-success">Guardar Remisión</button>
+  </form>
+</div>
+
+<script>
+  // PEGA AQUI TU URL DESPLEGADA DE GOOGLE APPS SCRIPT
+  const API_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+  let catalogo = [];
+
+  async function iniciarRemision() {
+    document.getElementById('btnNueva').classList.add('hidden');
+    document.getElementById('formRemision').classList.remove('hidden');
+
+    try {
+      const res = await fetch(API_URL);
+      catalogo = await res.json();
+      agregarFila();
+    } catch (err) {
+      alert('Error al cargar el catálogo de productos.');
+      console.error(err);
+    }
+  }
+
+  function agregarFila() {
+    const tbody = document.getElementById('filas');
+    const tr = document.createElement('tr');
+
+    let opciones = catalogo.map((p, i) => `<option value="${i}">${p.nombre}</option>`).join('');
+
+    tr.innerHTML = `
+      <td>
+        <select onchange="actualizarFila(this)" required>
+          <option value="">Seleccionar...</option>
+          ${opciones}
+        </select>
+      </td>
+      <td><input type="text" class="desc" readonly></td>
+      <td><input type="number" class="precio" step="0.01" readonly></td>
+      <td><input type="number" class="cant" value="1" min="1" onchange="calcularTotal()" onkeyup="calcularTotal()"></td>
+      <td><input type="number" class="subtotal" step="0.01" readonly></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function actualizarFila(select) {
+    const row = select.closest('tr');
+    const prod = catalogo[select.value];
+    if (prod) {
+      row.querySelector('.desc').value = prod.descripcion;
+      row.querySelector('.precio').value = prod.precio;
+    } else {
+      row.querySelector('.desc').value = '';
+      row.querySelector('.precio').value = '';
+    }
+    calcularTotal();
+  }
+
+  function calcularTotal() {
+    let total = 0;
+    document.querySelectorAll('#filas tr').forEach(row => {
+      const precio = parseFloat(row.querySelector('.precio').value) || 0;
+      const cant = parseFloat(row.querySelector('.cant').value) || 0;
+      const sub = precio * cant;
+      row.querySelector('.subtotal').value = sub.toFixed(2);
+      total += sub;
+    });
+    document.getElementById('totalText').innerText = total.toFixed(2);
+  }
+
+  async function guardarRemision(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnGuardar');
+    btn.disabled = true;
+    btn.innerText = "Guardando...";
+
+    const items = [];
+    document.querySelectorAll('#filas tr').forEach(row => {
+      const select = row.querySelector('select');
+      if (select.value !== "") {
+        const prod = catalogo[select.value];
+        items.push({
+          nombre: prod.nombre,
+          precio: prod.precio,
+          cantidad: parseFloat(row.querySelector('.cant').value),
+          subtotal: parseFloat(row.querySelector('.subtotal').value)
+        });
+      }
+    });
+
+    const payload = {
+      cliente: document.getElementById('cliente').value,
+      items: items,
+      total: parseFloat(document.getElementById('totalText').innerText)
+    };
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        alert('Remisión ' + result.folio + ' guardada exitosamente.');
+        window.location.reload();
+      } else {
+        alert('Error al guardar: ' + result.message);
+      }
+    } catch (err) {
+      alert('Ocurrió un error al enviar la remisión.');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Guardar Remisión";
+    }
+  }
+</script>
+</body>
+</html>
