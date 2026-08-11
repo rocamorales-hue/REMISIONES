@@ -56,8 +56,8 @@
 </div>
 
 <script>
-  // PEGA AQUI TU URL DESPLEGADA DE GOOGLE APPS SCRIPT
-  const API_URL = "https://drive.google.com/drive/u/0/folders/1BJGHTpM-LwlNatKu1STrILpXRmkS_FMA";
+  // URL DE TU WEB APP DE GOOGLE APPS SCRIPT
+  const API_URL = "https://script.google.com/macros/s/AKfycbyp5G477OvplvxyIC2S8wDXx8D20hoIqM71jl513s1nXXub2uYnGEOAOY7HIOn31iaIOw/exec";
   let catalogo = [];
 
   async function iniciarRemision() {
@@ -99,8 +99,8 @@
     const row = select.closest('tr');
     const prod = catalogo[select.value];
     if (prod) {
-      row.querySelector('.desc').value = prod.descripcion;
-      row.querySelector('.precio').value = prod.precio;
+      row.querySelector('.desc').value = prod.descripcion || '';
+      row.querySelector('.precio').value = prod.precio || 0;
     } else {
       row.querySelector('.desc').value = '';
       row.querySelector('.precio').value = '';
