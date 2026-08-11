@@ -56,8 +56,8 @@
 </div>
 
 <script>
-  // URL DE TU WEB APP DE GOOGLE APPS SCRIPT
-  const API_URL = "https://script.google.com/macros/s/AKfycbyp5G477OvplvxyIC2S8wDXx8D20hoIqM71jl513s1nXXub2uYnGEOAOY7HIOn31iaIOw/exec";
+  // NUEVA URL ACTUALIZADA DE TU GOOGLE APPS SCRIPT
+  const API_URL = "https://script.google.com/macros/s/AKfycbziuS5GZgsd_fTpAiQUNIij7TU2d9d78QanR88SxevTqcyi6_6zO39OJXHRGBa8XJstHA/exec";
   let catalogo = [];
 
   async function iniciarRemision() {
@@ -65,7 +65,7 @@
     document.getElementById('formRemision').classList.remove('hidden');
 
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(API_URL, { redirect: 'follow' });
       catalogo = await res.json();
       agregarFila();
     } catch (err) {
