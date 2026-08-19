@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cotización / Factura</title>
+  <!-- html2pdf.js CDN para la descarga directa en PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -14,13 +16,38 @@
       padding: 20px;
       color: #333;
     }
-    .invoice-card {
-      background: #fff;
+    .container-wrapper {
       max-width: 900px;
       margin: 0 auto;
+    }
+    /* Barra de botones de acción superior */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      background: #ffffff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+    .top-bar-title {
+      font-weight: bold;
+      color: #1a3c1e;
+      font-size: 15px;
+    }
+    .top-bar-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .invoice-card {
+      background: #fff;
       padding: 25px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 4px;
     }
+
     /* Encabezado */
     .top-header {
       display: flex;
@@ -55,7 +82,7 @@
       font-weight: bold;
     }
 
-    /* Seccion Cliente */
+    /* Sección Cliente */
     .client-section {
       display: flex;
       gap: 40px;
@@ -118,42 +145,61 @@
       font-weight: bold;
     }
 
-    /* Botones y Pie */
-    .actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+    /* Botones y Estilos */
     .btn {
       background-color: #2b4c20;
       color: white;
       border: none;
       padding: 8px 15px;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: 4px;
       font-size: 13px;
+      font-weight: bold;
+      transition: background-color 0.2s;
     }
     .btn:hover {
       background-color: #1a3c1e;
     }
+    .btn-pdf {
+      background-color: #d9534f;
+    }
+    .btn-pdf:hover {
+      background-color: #c9302c;
+    }
+    .btn-reset {
+      background-color: #6c757d;
+    }
+    .btn-reset:hover {
+      background-color: #5a6268;
+    }
+    .btn-remove {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+    }
 
-    /* Totales */
+    /* Totales y Observaciones */
     .totals-container {
       display: flex;
       justify-content: space-between;
       margin-top: 15px;
     }
     .obs-box {
-      width: 60%;
+      width: 58%;
       font-size: 13px;
     }
     .obs-box h5 {
       margin: 0 0 5px 0;
       border-bottom: 1px solid #ccc;
       padding-bottom: 3px;
+      color: #1a3c1e;
     }
     .totals-table {
-      width: 35%;
+      width: 38%;
       border-collapse: collapse;
       font-size: 13px;
     }
@@ -165,126 +211,197 @@
       font-weight: bold;
       color: #333;
     }
+
+    /* Estilos específicos para cuando se imprime / genera PDF */
+    .print-value {
+      display: none;
+    }
+
+    body.printing-pdf input, 
+    body.printing-pdf select, 
+    body.printing-pdf .btn-remove, 
+    body.printing-pdf .last-price-hint,
+    body.printing-pdf .no-print {
+      display: none !important;
+    }
+
+    body.printing-pdf .print-value {
+      display: inline-block !important;
+      width: 100%;
+    }
+
+    body.printing-pdf .items-table td {
+      padding: 6px;
+    }
   </style>
 </head>
 <body>
 
-<div class="invoice-card">
-  <!-- Encabezado -->
-  <div class="top-header">
-    <div>
-      <div class="company-title">COMERCIAL Y SERVICIOS AGRICOLAS MG, S DE RL DE CV</div>
-      <div class="company-info">
-        CSA190827LE7<br>
-        PRIV. MOTTOLA NO. 2 COL. VILLA BONITA, HERMOSILLO, SON.<br>
-        WHATSAPP. 662 339 7323<br>
-        cafesierraescondida@gmail.com
+<div class="container-wrapper">
+
+  <!-- Panel de control de usuario -->
+  <div class="top-bar">
+    <div class="top-bar-title">Panel de Cotizaciones</div>
+    <div class="top-bar-buttons">
+      <button class="btn btn-reset" onclick="nuevoFormulario()">📄 Nuevo / Borrar Datos</button>
+      <button class="btn btn-pdf" onclick="descargarPDF()">📥 Descargar PDF</button>
+    </div>
+  </div>
+
+  <!-- Documento Cotización -->
+  <div class="invoice-card" id="cotizacionDoc">
+    
+    <!-- Encabezado -->
+    <div class="top-header">
+      <div>
+        <div class="company-title">COMERCIAL Y SERVICIOS AGRICOLAS MG, S DE RL DE CV</div>
+        <div class="company-info">
+          CSA190827LE7<br>
+          PRIV. MOTTOLA NO. 2 COL. VILLA BONITA, HERMOSILLO, SON.<br>
+          WHATSAPP. 662 339 7323<br>
+          cafesierraescondida@gmail.com
+        </div>
+      </div>
+      <div>
+        <table class="meta-table">
+          <tr><th>Fecha</th></tr>
+          <tr><td id="fechaDoc">20/09/2025</td></tr>
+          <tr><th>Referencia</th></tr>
+          <tr><td id="refDoc">CES-20092025</td></tr>
+        </table>
       </div>
     </div>
-    <div>
-      <table class="meta-table">
-        <tr><th>Fecha</th></tr>
-        <tr><td>20/09/2025</td></tr>
-        <tr><th>Referencia</th></tr>
-        <tr><td>CES-20092025</td></tr>
+
+    <!-- Información de Cliente -->
+    <div class="client-section">
+      <div class="client-col">
+        <h4>Cliente</h4>
+        <p><strong>Congreso del Estado de Sonora</strong></p>
+        <p>RFC: CES</p>
+        <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
+        <p>Tel.</p>
+        <p>Email:</p>
+      </div>
+      <div class="client-col">
+        <h4>Enviar a</h4>
+        <p><strong>Congreso del Estado de Sonora</strong></p>
+        <p>RFC: CES</p>
+        <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
+        <p>Tel.</p>
+        <p>Email:</p>
+      </div>
+    </div>
+
+    <!-- Datalist con Opciones Preescritas -->
+    <datalist id="lista-productos">
+      <option value="Café en grano o molido">
+      <option value="Auriculares inalámbricos">
+      <option value="Botella de agua reutilizable">
+      <option value="Cuaderno o libreta de notas">
+      <option value="Camiseta de algodón">
+      <option value="Cargador portátil / Power bank">
+      <option value="Crema hidratante">
+      <option value="Mochila resistente">
+    </datalist>
+
+    <!-- Tabla de Items -->
+    <table class="items-table" id="tablaProductos">
+      <thead>
+        <tr>
+          <th style="width: 42%;">Descripción</th>
+          <th style="width: 12%;">Cantidad</th>
+          <th style="width: 15%;">P.U.</th>
+          <th style="width: 11%;">IVA</th>
+          <th style="width: 15%;">Importe</th>
+          <th style="width: 5%;" class="no-print"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Las filas se insertan dinámicamente -->
+      </tbody>
+    </table>
+
+    <div class="no-print" style="margin-top: 10px;">
+      <button class="btn" onclick="agregarFila()">+ Agregar Producto</button>
+    </div>
+
+    <!-- Observaciones y Totales -->
+    <div class="totals-container">
+      <div class="obs-box">
+        <h5>Observaciones / Instrucciones de pago:</h5>
+      </div>
+      <table class="totals-table">
+        <tr>
+          <td>Subtotal</td>
+          <td id="subtotalGral">$ 0.00</td>
+        </tr>
+        <tr>
+          <td>IVA</td>
+          <td id="ivaGral">$ 0.00</td>
+        </tr>
+        <tr>
+          <td>Envío</td>
+          <td>$ -</td>
+        </tr>
+        <tr>
+          <td>Total</td>
+          <td id="totalGral" style="font-weight: bold; font-size: 15px;">$ 0.00</td>
+        </tr>
       </table>
     </div>
-  </div>
 
-  <!-- Información de Cliente -->
-  <div class="client-section">
-    <div class="client-col">
-      <h4>Cliente</h4>
-      <p><strong>Congreso del Estado de Sonora</strong></p>
-      <p>RFC: CES</p>
-      <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
-      <p>Tel.</p>
-      <p>Email:</p>
-    </div>
-    <div class="client-col">
-      <h4>Enviar a</h4>
-      <p><strong>Congreso del Estado de Sonora</strong></p>
-      <p>RFC: CES</p>
-      <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
-      <p>Tel.</p>
-      <p>Email:</p>
-    </div>
-  </div>
-
-  <!-- Datalist con Opciones Preescritas -->
-  <datalist id="lista-productos">
-    <option value="Café en grano o molido">
-    <option value="Auriculares inalámbricos">
-    <option value="Botella de agua reutilizable">
-    <option value="Cuaderno o libreta de notas">
-    <option value="Camiseta de algodón">
-    <option value="Cargador portátil / Power bank">
-    <option value="Crema hidratante">
-    <option value="Mochila resistente">
-  </datalist>
-
-  <!-- Tabla de Items -->
-  <table class="items-table" id="tablaProductos">
-    <thead>
-      <tr>
-        <th style="width: 45%;">Descripción</th>
-        <th style="width: 12%;">Cantidad</th>
-        <th style="width: 15%;">P.U.</th>
-        <th style="width: 13%;">IVA</th>
-        <th style="width: 15%;">Importe</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Fila 1 inicial -->
-      <tr>
-        <td>
-          <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
-          <span class="last-price-hint"></span>
-        </td>
-        <td><input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)"></td>
-        <td><input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)"></td>
-        <td>
-          <select class="iva-select" onchange="calcularFila(this)">
-            <option value="0.16">16%</option>
-            <option value="0.00">0%</option>
-          </select>
-        </td>
-        <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="actions">
-    <button class="btn" onclick="agregarFila()">+ Agregar Producto</button>
-  </div>
-
-  <!-- Observaciones y Totales -->
-  <div class="totals-container">
-    <div class="obs-box">
-      <h5>Observaciones / Instrucciones de pago:</h5>
-    </div>
-    <table class="totals-table">
-      <tr>
-        <td>Subtotal</td>
-        <td id="subtotalGral">$ 0.00</td>
-      </tr>
-      <tr>
-        <td>IVA</td>
-        <td id="ivaGral">$ 0.00</td>
-      </tr>
-      <tr>
-        <td>Envío</td>
-        <td>$ -</td>
-      </tr>
-      <tr>
-        <td>Total</td>
-        <td id="totalGral" style="font-weight: bold; font-size: 15px;">$ 0.00</td>
-      </tr>
-    </table>
   </div>
 </div>
 
 <script>
+  // Inicializar con una fila al cargar
+  window.onload = function() {
+    agregarFila();
+  };
+
+  // Agregar filas dinámicamente
+  function agregarFila() {
+    const tbody = document.querySelector('#tablaProductos tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
+        <span class="print-value"></span>
+        <span class="last-price-hint"></span>
+      </td>
+      <td>
+        <input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)">
+        <span class="print-value" style="text-align: center;"></span>
+      </td>
+      <td>
+        <input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)">
+        <span class="print-value" style="text-align: right;"></span>
+      </td>
+      <td>
+        <select class="iva-select" onchange="calcularFila(this)">
+          <option value="0.16">16%</option>
+          <option value="0.00">0%</option>
+        </select>
+        <span class="print-value" style="text-align: center;"></span>
+      </td>
+      <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
+      <td class="no-print" style="text-align: center;">
+        <button class="btn-remove" onclick="eliminarFila(this)">✕</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function eliminarFila(btn) {
+    const tbody = document.querySelector('#tablaProductos tbody');
+    if (tbody.rows.length > 1) {
+      btn.closest('tr').remove();
+      actualizarTotalesGenerales();
+    } else {
+      alert("La tabla debe contener al menos un producto.");
+    }
+  }
+
   // Detectar producto seleccionado y cargar último precio guardado
   function alCambiarProducto(input) {
     const row = input.closest('tr');
@@ -296,7 +413,7 @@
       const ultimoPrecio = localStorage.getItem('precio_' + prodName);
       if (ultimoPrecio !== null) {
         hintSpan.textContent = `Último precio: $${ultimoPrecio}`;
-        precioInput.value = ultimoPrecio; // Autocompleta el campo precio con el último registrado
+        precioInput.value = ultimoPrecio; // Autocompleta el precio
         calcularFila(precioInput);
       } else {
         hintSpan.textContent = 'Sin historial';
@@ -319,7 +436,7 @@
     calcularFila(input);
   }
 
-  // Calcular filas y totales
+  // Calcular importe por fila y totales
   function calcularFila(element) {
     const row = element.closest('tr');
     const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
@@ -353,26 +470,56 @@
     document.getElementById('totalGral').textContent = `$ ${total.toFixed(2)}`;
   }
 
-  // Agregar filas dinámicamente
-  function agregarFila() {
-    const tbody = document.querySelector('#tablaProductos tbody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>
-        <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
-        <span class="last-price-hint"></span>
-      </td>
-      <td><input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)"></td>
-      <td><input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)"></td>
-      <td>
-        <select class="iva-select" onchange="calcularFila(this)">
-          <option value="0.16">16%</option>
-          <option value="0.00">0%</option>
-        </select>
-      </td>
-      <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
-    `;
-    tbody.appendChild(tr);
+  // Botón: Nuevo / Borrar Datos
+  function nuevoFormulario() {
+    if (confirm("¿Deseas limpiar todos los campos para crear una nueva cotización?")) {
+      const tbody = document.querySelector('#tablaProductos tbody');
+      tbody.innerHTML = '';
+      agregarFila();
+      actualizarTotalesGenerales();
+    }
+  }
+
+  // Botón: Descargar PDF automáticamente
+  function descargarPDF() {
+    // 1. Copiar los valores de los inputs a spans para renderizar texto plano perfecto en PDF
+    const filas = document.querySelectorAll('#tablaProductos tbody tr');
+    
+    filas.forEach(row => {
+      const prodVal = row.querySelector('.prod-input').value;
+      const cantVal = row.querySelector('.cant-input').value;
+      const puVal = row.querySelector('.precio-input').value;
+      const ivaSelect = row.querySelector('.iva-select');
+      const ivaVal = ivaSelect.options[ivaSelect.selectedIndex].text;
+
+      const printSpans = row.querySelectorAll('.print-value');
+      printSpans[0].textContent = prodVal;
+      printSpans[1].textContent = cantVal;
+      printSpans[2].textContent = puVal ? `$ ${parseFloat(puVal).toFixed(2)}` : '$ 0.00';
+      printSpans[3].textContent = ivaVal;
+    });
+
+    // 2. Activar modo impresión (oculta inputs y muestra textos)
+    document.body.classList.add('printing-pdf');
+
+    const elemento = document.getElementById('cotizacionDoc');
+    
+    const opciones = {
+      margin:       [10, 10, 10, 10],
+      filename:     'Cotizacion_CES.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 3. Generar y descargar PDF
+    html2pdf().set(opciones).from(elemento).save().then(() => {
+      // Desactivar modo impresión al finalizar
+      document.body.classList.remove('printing-pdf');
+    }).catch(err => {
+      console.error(err);
+      document.body.classList.remove('printing-pdf');
+    });
   }
 </script>
 
