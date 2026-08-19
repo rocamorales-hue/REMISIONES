@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cotización / Factura</title>
-  <!-- html2pdf.js CDN para la descarga directa en PDF -->
+  <!-- html2pdf.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * {
@@ -20,7 +20,7 @@
       max-width: 900px;
       margin: 0 auto;
     }
-    /* Barra de botones de acción superior */
+    /* Barra superior de acciones */
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -43,7 +43,7 @@
 
     .invoice-card {
       background: #fff;
-      padding: 25px;
+      padding: 30px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       border-radius: 4px;
     }
@@ -65,6 +65,7 @@
       color: #666;
       font-size: 13px;
       margin-top: 4px;
+      line-height: 1.4;
     }
     .meta-table {
       border-collapse: collapse;
@@ -77,30 +78,43 @@
       text-align: right;
     }
     .meta-table td {
-      padding: 3px 8px;
+      padding: 3px 0;
+      text-align: right;
+    }
+    .meta-input {
       text-align: right;
       font-weight: bold;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 3px 6px;
+      width: 130px;
     }
 
     /* Sección Cliente */
     .client-section {
-      display: flex;
-      gap: 40px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 13px;
     }
-    .client-col {
-      flex: 1;
-    }
     .client-col h4 {
-      margin: 0 0 5px 0;
-      border-bottom: 1px solid #ccc;
+      margin: 0 0 8px 0;
+      border-bottom: 2px solid #2b4c20;
       padding-bottom: 3px;
       color: #1a3c1e;
     }
-    .client-col p {
-      margin: 3px 0;
-      color: #444;
+    .client-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .client-grid input {
+      width: 100%;
+      padding: 5px 8px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    .full-width {
+      grid-column: span 2;
     }
 
     /* Tabla de Productos */
@@ -111,7 +125,7 @@
       font-size: 13px;
     }
     .items-table th {
-      background-color: #2b4c20; /* Verde de la imagen */
+      background-color: #2b4c20;
       color: white;
       text-align: left;
       padding: 8px;
@@ -125,15 +139,13 @@
       background-color: #f9f9f9;
     }
     
-    /* Inputs dentro de la tabla */
-    input[type="text"], input[type="number"], select {
-      width: 100%;
-      padding: 4px 6px;
+    input[type="text"], input[type="number"], input[type="date"], select {
+      padding: 5px 6px;
       border: 1px solid #ddd;
       border-radius: 3px;
       font-size: 13px;
     }
-    input:focus {
+    input:focus, select:focus {
       outline: 1px solid #2b4c20;
       background-color: #f0fff0;
     }
@@ -145,7 +157,7 @@
       font-weight: bold;
     }
 
-    /* Botones y Estilos */
+    /* Botones */
     .btn {
       background-color: #2b4c20;
       color: white;
@@ -155,23 +167,12 @@
       border-radius: 4px;
       font-size: 13px;
       font-weight: bold;
-      transition: background-color 0.2s;
     }
-    .btn:hover {
-      background-color: #1a3c1e;
-    }
-    .btn-pdf {
-      background-color: #d9534f;
-    }
-    .btn-pdf:hover {
-      background-color: #c9302c;
-    }
-    .btn-reset {
-      background-color: #6c757d;
-    }
-    .btn-reset:hover {
-      background-color: #5a6268;
-    }
+    .btn:hover { background-color: #1a3c1e; }
+    .btn-pdf { background-color: #d9534f; }
+    .btn-pdf:hover { background-color: #c9302c; }
+    .btn-reset { background-color: #6c757d; }
+    .btn-reset:hover { background-color: #5a6268; }
     .btn-remove {
       background-color: #ff4d4d;
       color: white;
@@ -198,6 +199,15 @@
       padding-bottom: 3px;
       color: #1a3c1e;
     }
+    .obs-box textarea {
+      width: 100%;
+      height: 70px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 5px;
+      font-size: 12px;
+      resize: none;
+    }
     .totals-table {
       width: 38%;
       border-collapse: collapse;
@@ -212,13 +222,12 @@
       color: #333;
     }
 
-    /* Estilos específicos para cuando se imprime / genera PDF */
-    .print-value {
-      display: none;
-    }
+    /* Formato para Exportar a PDF */
+    .print-value { display: none; }
 
     body.printing-pdf input, 
     body.printing-pdf select, 
+    body.printing-pdf textarea, 
     body.printing-pdf .btn-remove, 
     body.printing-pdf .last-price-hint,
     body.printing-pdf .no-print {
@@ -239,7 +248,7 @@
 
 <div class="container-wrapper">
 
-  <!-- Panel de control de usuario -->
+  <!-- Barra de acciones -->
   <div class="top-bar">
     <div class="top-bar-title">Panel de Cotizaciones</div>
     <div class="top-bar-buttons">
@@ -248,7 +257,7 @@
     </div>
   </div>
 
-  <!-- Documento Cotización -->
+  <!-- Cotización -->
   <div class="invoice-card" id="cotizacionDoc">
     
     <!-- Encabezado -->
@@ -265,46 +274,222 @@
       <div>
         <table class="meta-table">
           <tr><th>Fecha</th></tr>
-          <tr><td id="fechaDoc">20/09/2025</td></tr>
+          <tr>
+            <td>
+              <input type="date" id="fechaInput" class="meta-input">
+              <span class="print-value" id="printFecha"></span>
+            </td>
+          </tr>
           <tr><th>Referencia</th></tr>
-          <tr><td id="refDoc">CES-20092025</td></tr>
+          <tr>
+            <td>
+              <input type="text" id="refInput" class="meta-input" placeholder="Ej. CES-20092025">
+              <span class="print-value" id="printRef"></span>
+            </td>
+          </tr>
         </table>
       </div>
     </div>
 
-    <!-- Información de Cliente -->
+    <!-- Sección Cliente -->
     <div class="client-section">
       <div class="client-col">
-        <h4>Cliente</h4>
-        <p><strong>Congreso del Estado de Sonora</strong></p>
-        <p>RFC: CES</p>
-        <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
-        <p>Tel.</p>
-        <p>Email:</p>
-      </div>
-      <div class="client-col">
-        <h4>Enviar a</h4>
-        <p><strong>Congreso del Estado de Sonora</strong></p>
-        <p>RFC: CES</p>
-        <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
-        <p>Tel.</p>
-        <p>Email:</p>
+        <h4>Datos del Cliente</h4>
+        <div class="client-grid">
+          <div class="full-width">
+            <input type="text" id="clienteNombre" placeholder="Nombre o Razón Social del Cliente">
+            <span class="print-value" id="printClienteNombre" style="font-weight: bold;"></span>
+          </div>
+          <div>
+            <input type="text" id="clienteRfc" placeholder="RFC">
+            <span class="print-value" id="printClienteRfc"></span>
+          </div>
+          <div>
+            <input type="text" id="clienteTel" placeholder="Teléfono">
+            <span class="print-value" id="printClienteTel"></span>
+          </div>
+          <div class="full-width">
+            <input type="text" id="clienteDir" placeholder="Dirección Completa">
+            <span class="print-value" id="printClienteDir"></span>
+          </div>
+          <div class="full-width">
+            <input type="text" id="clienteEmail" placeholder="Correo Electrónico">
+            <span class="print-value" id="printClienteEmail"></span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Datalist con Opciones Preescritas -->
+    <!-- Lista de productos autocompletables -->
     <datalist id="lista-productos">
-      <option value="Café en grano o molido">
-      <option value="Auriculares inalámbricos">
-      <option value="Botella de agua reutilizable">
-      <option value="Cuaderno o libreta de notas">
-      <option value="Camiseta de algodón">
-      <option value="Cargador portátil / Power bank">
-      <option value="Crema hidratante">
-      <option value="Mochila resistente">
+      <option value="6PK ELECTROLIT MIX COMBO">
+      <option value="AGITADORES DE MADERA">
+      <option value="AGUA GASIFICADA DE SABOR KIRKLAND 355 ML">
+      <option value="AGUA MINERAL CANADA DRY 235 ML">
+      <option value="AGUA MINERAL PEÑAFIEL 235 ML">
+      <option value="AGUA NATURALE KIRKLAND 500 ML">
+      <option value="AGUA PURIFICADA 355 ML">
+      <option value="ALFAJORES">
+      <option value="ALMENDRAS MEMBERS MARK">
+      <option value="AMERICANO DEL DIA (12 OZ) CALIENTE">
+      <option value="AMERICANO DEL DIA (16 OZ) CALIENTE">
+      <option value="AMERICANO ESPRESSO (12 OZ) CALIENTE">
+      <option value="AMERICANO ESPRESSO (16 OZ) EN LAS ROCAS">
+      <option value="AMERICANO TONICO (16 OZ) EN LAS ROCAS">
+      <option value="AZUCAR (1 KG)">
+      <option value="AZUCAR REFINADA EN SOBRES (1,000 PZ)">
+      <option value="AZUCAR ZULKA 10 KG">
+      <option value="BARRA DE CHISPAS DE CHOCOLATE KIRKLAND">
+      <option value="BARRAS NATURE VALLEY">
+      <option value="BOLSA DE CAFE (180 GR)">
+      <option value="BOLSA DE CAFE COSTERA">
+      <option value="BOLSA DE FRUTOS SECOS">
+      <option value="BOTIQUIN ENFERMERIA">
+      <option value="BROWNIES (ANGEL'S)">
+      <option value="CACAHUATE ENCHILADOS MEMBERS MARK">
+      <option value="CACAHUATE JAPONES MEMBERS MARK">
+      <option value="CACAHUATE SALADITOS DE LA ROSA">
+      <option value="CAFE A GRANEL">
+      <option value="CAFE MOLIDO (PRUEBA)">
+      <option value="CAFE VERACRUZ LA PARROQUIA 500 GR">
+      <option value="CAFETERA 45 TAZAS HAMILTON BEACH">
+      <option value="CAFETERA CUISINART MOLINO INTEGRADO 12 TAZAS">
+      <option value="CAFETERA HAMILTON BEACH (14 TAZAS)">
+      <option value="CAFETERA INSUMOS">
+      <option value="CAFETERA KOBLENZ (15 TAZAS)">
+      <option value="CAFETERA OSTER (12 TAZAS)">
+      <option value="Capuchino Regular (16 oz) Caliente">
+      <option value="CAPUCHINO REGULAR (12 OZ) CALIENTE">
+      <option value="Capuchino Saborizado (12 oz) Caliente">
+      <option value="Capuchino Saborizado (16 oz) Caliente">
+      <option value="Carnation 930 ml">
+      <option value="Chai Latte (12 oz) Caliente">
+      <option value="Chai Latte (16 oz) Caliente">
+      <option value="Chai Latte (16 oz) En Rocas">
+      <option value="CHAMOY NAVOLATO">
+      <option value="CHAROLA TERMICA 7C REYMA CON 500 PZAS">
+      <option value="CHD - 1,000 CAFE TOSTADO">
+      <option value="CHD - 2,500 CAFE TOSTADO">
+      <option value="Chd - 250 Cafe Tostado">
+      <option value="Chd - 500 Cafe Tostado">
+      <option value="Chicharron de chile serrano 140 gr">
+      <option value="Chocolate (16 Oz) En Rocas">
+      <option value="Chocolate Caliente (12 oz) Caliente">
+      <option value="Chocolate Caliente (16 oz) Caliente">
+      <option value="Chr - 1,000 Cafe Tostado">
+      <option value="Chr - 2,500 Cafe Tostado">
+      <option value="Chr - 250 Cafe Tostado">
+      <option value="Chr - 500 Cafe Tostado">
+      <option value="Cintillo termico para vaso">
+      <option value="Coffee Break para 30 Personas">
+      <option value="Coffee Mate Original">
+      <option value="Coffee Mate Vainilla">
+      <option value="COOLER SYMPHONY 12 LT">
+      <option value="cuchara caja 280 pz">
+      <option value="cup cake chocolate">
+      <option value="Dirty Chai Latte (12 oz) Caliente">
+      <option value="Dirty Chai Latte (16 oz) Caliente">
+      <option value="Dirty Chai Latte (16 oz) En Rocas">
+      <option value="dispensador de agua mirage">
+      <option value="Dispensador de agua whirlpool gris">
+      <option value="Empanada de Cajeta">
+      <option value="Empanaditas 3 pza">
+      <option value="Entrega">
+      <option value="Envio sencillo">
+      <option value="FRAPPE">
+      <option value="galleta chispas fresa/chocolate">
+      <option value="Galleta Costco">
+      <option value="Galleta de Nuez">
+      <option value="galleta red velvet/oreo">
+      <option value="Galletas Gamesa Surtido Rico">
+      <option value="Galletas Pastisetas">
+      <option value="Galletas surtidas Members Mark">
+      <option value="Galletas Tartas Mix">
+      <option value="Galletas Tartas Paquetin c/2">
+      <option value="Galletitas mantequilla">
+      <option value="Helado Doble">
+      <option value="Helado Doble (Especial)">
+      <option value="Helado Sencillo">
+      <option value="Helado Sencillo (Especial)">
+      <option value="Hielera">
+      <option value="Hielo en cubos">
+      <option value="hisense frigobar 4.2">
+      <option value="Jarra de Cristal (1.5 L)">
+      <option value="JUGO JUMEX LATA 355 ML">
+      <option value="Latte (12 oz) Caliente">
+      <option value="Latte (16 oz) Caliente">
+      <option value="Latte (16 oz) En Rocas">
+      <option value="Latte Saborizado (16 oz) En Rocas">
+      <option value="Mesa 66 x 46 cm">
+      <option value="Mesa resina">
+      <option value="mezcla de frutos enchilados">
+      <option value="Mix Nueces">
+      <option value="Moka Latte (12 oz) Caliente">
+      <option value="Moka Latte (16 oz) Caliente">
+      <option value="Moka Latte (16 oz) En Rocas">
+      <option value="Molino de Cafe">
+      <option value="Oar - 1,000 Cafe Tostado">
+      <option value="Oar - 250 Cafe Tostado">
+      <option value="Oar - 500 Cafe Tostado">
+      <option value="Paleta Cookies & Cream">
+      <option value="Paleta de Crema">
+      <option value="Paleta de Fruta">
+      <option value="Paleta de Yogurt">
+      <option value="Paleta Nora Chocolate-Cacahuate">
+      <option value="Paleta Nora Vainilla-Choco">
+      <option value="Paleta Riccubierta">
+      <option value="Paquete Cafetera e Insumos (300 personas)">
+      <option value="Pastel Zanahoria">
+      <option value="Plato Cuadrado de Porcelana">
+      <option value="Plato papel 240 pz">
+      <option value="plato pastelero dixie 300 pz">
+      <option value="Prensa Francesa (1,000 ml)">
+      <option value="Prensa Francesa (600 ml)">
+      <option value="Prensa Francesa 800 ml">
+      <option value="Refresco Coca-Cola Light 235 ml">
+      <option value="Refresco Coca-Cola Regular 235 ml">
+      <option value="Refresco Coca-Cola Sin Azucar 235 ml">
+      <option value="Refresco (sabores) 235 ml">
+      <option value="Refrigerador 4.4 magic chef">
+      <option value="Renta de Cafetera (45 tazas por dia)">
+      <option value="Salsa de chile habanero asado al carbon 180 ml">
+      <option value="Salsa de chile habanero asado cremosa 180 ml">
+      <option value="Salsa de chile habanero cocido 180 ml">
+      <option value="Salsa macha gourmet 180 gr">
+      <option value="Salsa negra con chile chiltepin">
+      <option value="Sandwich de Vainilla">
+      <option value="Sandwich Mini Bite">
+      <option value="servilleta delsey">
+      <option value="Servilleta Delsey 9 x 100pz">
+      <option value="Shot de Espresso Caliente">
+      <option value="Shot DOBLE de Sabor (Vainilla, Caramelo, Avellana)">
+      <option value="Snack Mix">
+      <option value="SNICKERS8PACK">
+      <option value="Splenda caja sobres">
+      <option value="Sustituto de crema 2PK 1.4 kg">
+      <option value="Sustituto de Crema Marino (1,000 sobres)">
+      <option value="Sweet Rolls">
+      <option value="tajin">
+      <option value="Taza Cuadrada de Porcelana">
+      <option value="Te de manzanilla members mark">
+      <option value="Te para infusion Members Mark Varios">
+      <option value="Te verde C/100 sobres Members Mark">
+      <option value="Tenedor caja 280 pz">
+      <option value="Tenedores caja 1000 pzas">
+      <option value="Tira de vaso papel 10 oz">
+      <option value="Tisana (12 oz) Caliente">
+      <option value="Tisana (16 oz) Caliente">
+      <option value="Tisana (16 oz) En Rocas">
+      <option value="VASO DE VIDRIO (445 ML)">
+      <option value="VASO PAPEL BLANCO 10 OZ CAJA CON 1000 PZAS">
+      <option value="VASO TERMICO NO 10 REYMA CON 1000 PZAS">
+      <option value="Ver - Gourmet - 1,000 Cafe Tostado">
+      <option value="Ver - Gourmet - 250 Cafe Tostado">
+      <option value="Ver - Gourmet - 500 Cafe Tostado">
+      <option value="Ver - Mezcla Ame - 1,000 Cafe Tostado">
     </datalist>
 
-    <!-- Tabla de Items -->
+    <!-- Tabla de Productos -->
     <table class="items-table" id="tablaProductos">
       <thead>
         <tr>
@@ -317,7 +502,7 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Las filas se insertan dinámicamente -->
+        <!-- Se insertan filas dinámicamente -->
       </tbody>
     </table>
 
@@ -329,6 +514,8 @@
     <div class="totals-container">
       <div class="obs-box">
         <h5>Observaciones / Instrucciones de pago:</h5>
+        <textarea id="obsInput" placeholder="Escribe notas o términos de pago..."></textarea>
+        <span class="print-value" id="printObs"></span>
       </div>
       <table class="totals-table">
         <tr>
@@ -354,12 +541,12 @@
 </div>
 
 <script>
-  // Inicializar con una fila al cargar
   window.onload = function() {
+    // Establecer fecha de hoy por defecto
+    document.getElementById('fechaInput').valueAsDate = new Date();
     agregarFila();
   };
 
-  // Agregar filas dinámicamente
   function agregarFila() {
     const tbody = document.querySelector('#tablaProductos tbody');
     const tr = document.createElement('tr');
@@ -402,7 +589,6 @@
     }
   }
 
-  // Detectar producto seleccionado y cargar último precio guardado
   function alCambiarProducto(input) {
     const row = input.closest('tr');
     const prodName = input.value.trim();
@@ -413,7 +599,7 @@
       const ultimoPrecio = localStorage.getItem('precio_' + prodName);
       if (ultimoPrecio !== null) {
         hintSpan.textContent = `Último precio: $${ultimoPrecio}`;
-        precioInput.value = ultimoPrecio; // Autocompleta el precio
+        precioInput.value = ultimoPrecio;
         calcularFila(precioInput);
       } else {
         hintSpan.textContent = 'Sin historial';
@@ -423,7 +609,6 @@
     }
   }
 
-  // Guardar en localStorage al modificar el precio
   function alCambiarPrecio(input) {
     const row = input.closest('tr');
     const prodName = row.querySelector('.prod-input').value.trim();
@@ -436,7 +621,6 @@
     calcularFila(input);
   }
 
-  // Calcular importe por fila y totales
   function calcularFila(element) {
     const row = element.closest('tr');
     const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
@@ -470,9 +654,16 @@
     document.getElementById('totalGral').textContent = `$ ${total.toFixed(2)}`;
   }
 
-  // Botón: Nuevo / Borrar Datos
   function nuevoFormulario() {
-    if (confirm("¿Deseas limpiar todos los campos para crear una nueva cotización?")) {
+    if (confirm("¿Deseas borrar los datos actuales para iniciar una nueva cotización?")) {
+      document.getElementById('refInput').value = '';
+      document.getElementById('clienteNombre').value = '';
+      document.getElementById('clienteRfc').value = '';
+      document.getElementById('clienteTel').value = '';
+      document.getElementById('clienteDir').value = '';
+      document.getElementById('clienteEmail').value = '';
+      document.getElementById('obsInput').value = '';
+      
       const tbody = document.querySelector('#tablaProductos tbody');
       tbody.innerHTML = '';
       agregarFila();
@@ -480,11 +671,21 @@
     }
   }
 
-  // Botón: Descargar PDF automáticamente
   function descargarPDF() {
-    // 1. Copiar los valores de los inputs a spans para renderizar texto plano perfecto en PDF
-    const filas = document.querySelectorAll('#tablaProductos tbody tr');
+    // 1. Preparar campos de encabezado y cliente para la vista de impresión
+    document.getElementById('printFecha').textContent = document.getElementById('fechaInput').value || '-';
+    document.getElementById('printRef').textContent = document.getElementById('refInput').value || '-';
     
+    document.getElementById('printClienteNombre').textContent = document.getElementById('clienteNombre').value || '';
+    document.getElementById('printClienteRfc').textContent = document.getElementById('clienteRfc').value ? 'RFC: ' + document.getElementById('clienteRfc').value : '';
+    document.getElementById('printClienteTel').textContent = document.getElementById('clienteTel').value ? 'Tel: ' + document.getElementById('clienteTel').value : '';
+    document.getElementById('printClienteDir').textContent = document.getElementById('clienteDir').value || '';
+    document.getElementById('printClienteEmail').textContent = document.getElementById('clienteEmail').value ? 'Email: ' + document.getElementById('clienteEmail').value : '';
+    
+    document.getElementById('printObs').textContent = document.getElementById('obsInput').value || '';
+
+    // 2. Preparar filas de tabla
+    const filas = document.querySelectorAll('#tablaProductos tbody tr');
     filas.forEach(row => {
       const prodVal = row.querySelector('.prod-input').value;
       const cantVal = row.querySelector('.cant-input').value;
@@ -499,22 +700,19 @@
       printSpans[3].textContent = ivaVal;
     });
 
-    // 2. Activar modo impresión (oculta inputs y muestra textos)
+    // 3. Renderizar y exportar a PDF
     document.body.classList.add('printing-pdf');
 
     const elemento = document.getElementById('cotizacionDoc');
-    
     const opciones = {
-      margin:       [10, 10, 10, 10],
-      filename:     'Cotizacion_CES.pdf',
+      margin:       [8, 8, 8, 8],
+      filename:     `Cotizacion_${document.getElementById('refInput').value || 'documento'}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // 3. Generar y descargar PDF
     html2pdf().set(opciones).from(elemento).save().then(() => {
-      // Desactivar modo impresión al finalizar
       document.body.classList.remove('printing-pdf');
     }).catch(err => {
       console.error(err);
