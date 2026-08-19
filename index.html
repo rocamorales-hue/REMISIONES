@@ -3,179 +3,378 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Remisiones</title>
+  <title>Cotización / Factura</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 20px; }
-    .container { max-width: 850px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    h2 { color: #2c3e50; margin-top: 0; }
-    .btn { background: #3498db; color: white; border: none; padding: 10px 18px; font-size: 14px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .btn:hover { background: #2980b9; }
-    .btn-success { background: #2ecc71; margin-top: 15px; }
-    .btn-success:hover { background: #27ae60; }
-    .hidden { display: none; }
-    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    th, td { border: 1px solid #e1e8ed; padding: 10px; text-align: left; }
-    th { background: #f8f9fa; color: #333; }
-    input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .total-box { text-align: right; font-size: 20px; font-weight: bold; margin: 20px 0; color: #2c3e50; }
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #f4f4f4;
+      padding: 20px;
+      color: #333;
+    }
+    .invoice-card {
+      background: #fff;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 25px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    /* Encabezado */
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+    .company-title {
+      font-weight: bold;
+      font-style: italic;
+      font-size: 18px;
+      color: #1a3c1e;
+    }
+    .company-info {
+      font-style: italic;
+      color: #666;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .meta-table {
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .meta-table th {
+      border-bottom: 1px solid #ccc;
+      color: #555;
+      padding: 3px 8px;
+      text-align: right;
+    }
+    .meta-table td {
+      padding: 3px 8px;
+      text-align: right;
+      font-weight: bold;
+    }
+
+    /* Seccion Cliente */
+    .client-section {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    .client-col {
+      flex: 1;
+    }
+    .client-col h4 {
+      margin: 0 0 5px 0;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 3px;
+      color: #1a3c1e;
+    }
+    .client-col p {
+      margin: 3px 0;
+      color: #444;
+    }
+
+    /* Tabla de Productos */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+    .items-table th {
+      background-color: #2b4c20; /* Verde de la imagen */
+      color: white;
+      text-align: left;
+      padding: 8px;
+      font-weight: normal;
+    }
+    .items-table td {
+      border: 1px solid #ccc;
+      padding: 4px;
+    }
+    .items-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    /* Inputs dentro de la tabla */
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    input:focus {
+      outline: 1px solid #2b4c20;
+      background-color: #f0fff0;
+    }
+    .last-price-hint {
+      font-size: 10px;
+      color: #28a745;
+      display: block;
+      margin-top: 2px;
+      font-weight: bold;
+    }
+
+    /* Botones y Pie */
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .btn {
+      background-color: #2b4c20;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    .btn:hover {
+      background-color: #1a3c1e;
+    }
+
+    /* Totales */
+    .totals-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .obs-box {
+      width: 60%;
+      font-size: 13px;
+    }
+    .obs-box h5 {
+      margin: 0 0 5px 0;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 3px;
+    }
+    .totals-table {
+      width: 35%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .totals-table td {
+      padding: 5px;
+      text-align: right;
+    }
+    .totals-table tr td:first-child {
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>Control de Remisiones</h2>
-  <button id="btnNueva" class="btn" onclick="iniciarRemision()">+ Nueva Remisión</button>
-
-  <form id="formRemision" class="hidden" onsubmit="guardarRemision(event)">
-    <div style="margin-top: 15px;">
-      <label><strong>Cliente:</strong></label>
-      <input type="text" id="cliente" required placeholder="Nombre del cliente o empresa" style="margin-top: 5px;">
+<div class="invoice-card">
+  <!-- Encabezado -->
+  <div class="top-header">
+    <div>
+      <div class="company-title">COMERCIAL Y SERVICIOS AGRICOLAS MG, S DE RL DE CV</div>
+      <div class="company-info">
+        CSA190827LE7<br>
+        PRIV. MOTTOLA NO. 2 COL. VILLA BONITA, HERMOSILLO, SON.<br>
+        WHATSAPP. 662 339 7323<br>
+        cafesierraescondida@gmail.com
+      </div>
     </div>
+    <div>
+      <table class="meta-table">
+        <tr><th>Fecha</th></tr>
+        <tr><td>20/09/2025</td></tr>
+        <tr><th>Referencia</th></tr>
+        <tr><td>CES-20092025</td></tr>
+      </table>
+    </div>
+  </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 30%;">Producto</th>
-          <th style="width: 35%;">Descripción</th>
-          <th style="width: 12%;">Precio</th>
-          <th style="width: 10%;">Cant.</th>
-          <th style="width: 13%;">Subtotal</th>
-        </tr>
-      </thead>
-      <tbody id="filas"></tbody>
+  <!-- Información de Cliente -->
+  <div class="client-section">
+    <div class="client-col">
+      <h4>Cliente</h4>
+      <p><strong>Congreso del Estado de Sonora</strong></p>
+      <p>RFC: CES</p>
+      <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
+      <p>Tel.</p>
+      <p>Email:</p>
+    </div>
+    <div class="client-col">
+      <h4>Enviar a</h4>
+      <p><strong>Congreso del Estado de Sonora</strong></p>
+      <p>RFC: CES</p>
+      <p>Av. Tehuantepec s/n, Las Palmas, 83270 Hermosillo, Son.</p>
+      <p>Tel.</p>
+      <p>Email:</p>
+    </div>
+  </div>
+
+  <!-- Datalist con Opciones Preescritas -->
+  <datalist id="lista-productos">
+    <option value="Café en grano o molido">
+    <option value="Auriculares inalámbricos">
+    <option value="Botella de agua reutilizable">
+    <option value="Cuaderno o libreta de notas">
+    <option value="Camiseta de algodón">
+    <option value="Cargador portátil / Power bank">
+    <option value="Crema hidratante">
+    <option value="Mochila resistente">
+  </datalist>
+
+  <!-- Tabla de Items -->
+  <table class="items-table" id="tablaProductos">
+    <thead>
+      <tr>
+        <th style="width: 45%;">Descripción</th>
+        <th style="width: 12%;">Cantidad</th>
+        <th style="width: 15%;">P.U.</th>
+        <th style="width: 13%;">IVA</th>
+        <th style="width: 15%;">Importe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Fila 1 inicial -->
+      <tr>
+        <td>
+          <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
+          <span class="last-price-hint"></span>
+        </td>
+        <td><input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)"></td>
+        <td><input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)"></td>
+        <td>
+          <select class="iva-select" onchange="calcularFila(this)">
+            <option value="0.16">16%</option>
+            <option value="0.00">0%</option>
+          </select>
+        </td>
+        <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <button class="btn" onclick="agregarFila()">+ Agregar Producto</button>
+  </div>
+
+  <!-- Observaciones y Totales -->
+  <div class="totals-container">
+    <div class="obs-box">
+      <h5>Observaciones / Instrucciones de pago:</h5>
+    </div>
+    <table class="totals-table">
+      <tr>
+        <td>Subtotal</td>
+        <td id="subtotalGral">$ 0.00</td>
+      </tr>
+      <tr>
+        <td>IVA</td>
+        <td id="ivaGral">$ 0.00</td>
+      </tr>
+      <tr>
+        <td>Envío</td>
+        <td>$ -</td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td id="totalGral" style="font-weight: bold; font-size: 15px;">$ 0.00</td>
+      </tr>
     </table>
-
-    <button type="button" class="btn" onclick="agregarFila()">+ Agregar Producto</button>
-
-    <div class="total-box">
-      Total: $<span id="totalText">0.00</span>
-    </div>
-
-    <button type="submit" id="btnGuardar" class="btn btn-success">Guardar Remisión</button>
-  </form>
+  </div>
 </div>
 
 <script>
-  // NUEVA URL PÚBLICA DE TU APLICACIÓN WEB
-  const API_URL = "https://script.google.com/macros/s/AKfycbz9aUGM68CMUZQ5PVbNR6dONyG1gUHX_5BA8VJLz2Wjr46MoP2lu95YuUeGpzm3gNNMbQ/exec"; 
-  let catalogo = [];
+  // Detectar producto seleccionado y cargar último precio guardado
+  function alCambiarProducto(input) {
+    const row = input.closest('tr');
+    const prodName = input.value.trim();
+    const hintSpan = row.querySelector('.last-price-hint');
+    const precioInput = row.querySelector('.precio-input');
 
-  function iniciarRemision() {
-    document.getElementById('btnNueva').classList.add('hidden');
-    document.getElementById('formRemision').classList.remove('hidden');
-
-    // Carga de productos usando JSONP (evita el error CORS)
-    window.cargarCatalogoCallback = function(data) {
-      if (Array.isArray(data)) {
-        catalogo = data;
-        agregarFila();
+    if (prodName) {
+      const ultimoPrecio = localStorage.getItem('precio_' + prodName);
+      if (ultimoPrecio !== null) {
+        hintSpan.textContent = `Último precio: $${ultimoPrecio}`;
+        precioInput.value = ultimoPrecio; // Autocompleta el campo precio con el último registrado
+        calcularFila(precioInput);
       } else {
-        alert("Error desde el servidor: " + (data.message || "Desconocido"));
+        hintSpan.textContent = 'Sin historial';
       }
-    };
-
-    const script = document.createElement('script');
-    script.src = `${API_URL}?callback=cargarCatalogoCallback`;
-    script.onerror = function() {
-      alert('Error al conectar con la base de datos de Google.');
-    };
-    document.body.appendChild(script);
+    } else {
+      hintSpan.textContent = '';
+    }
   }
 
+  // Guardar en localStorage al modificar el precio
+  function alCambiarPrecio(input) {
+    const row = input.closest('tr');
+    const prodName = row.querySelector('.prod-input').value.trim();
+    const precioVal = parseFloat(input.value);
+
+    if (prodName && !isNaN(precioVal)) {
+      localStorage.setItem('precio_' + prodName, precioVal.toFixed(2));
+      row.querySelector('.last-price-hint').textContent = `Último precio: $${precioVal.toFixed(2)}`;
+    }
+    calcularFila(input);
+  }
+
+  // Calcular filas y totales
+  function calcularFila(element) {
+    const row = element.closest('tr');
+    const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
+    const pu = parseFloat(row.querySelector('.precio-input').value) || 0;
+    
+    const importe = cant * pu;
+    row.querySelector('.importe-td').textContent = `$ ${importe.toFixed(2)}`;
+
+    actualizarTotalesGenerales();
+  }
+
+  function actualizarTotalesGenerales() {
+    let subtotal = 0;
+    let totalIva = 0;
+
+    const filas = document.querySelectorAll('#tablaProductos tbody tr');
+    filas.forEach(row => {
+      const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
+      const pu = parseFloat(row.querySelector('.precio-input').value) || 0;
+      const tasaIva = parseFloat(row.querySelector('.iva-select').value) || 0;
+
+      const imp = cant * pu;
+      subtotal += imp;
+      totalIva += imp * tasaIva;
+    });
+
+    const total = subtotal + totalIva;
+
+    document.getElementById('subtotalGral').textContent = `$ ${subtotal.toFixed(2)}`;
+    document.getElementById('ivaGral').textContent = `$ ${totalIva.toFixed(2)}`;
+    document.getElementById('totalGral').textContent = `$ ${total.toFixed(2)}`;
+  }
+
+  // Agregar filas dinámicamente
   function agregarFila() {
-    const tbody = document.getElementById('filas');
+    const tbody = document.querySelector('#tablaProductos tbody');
     const tr = document.createElement('tr');
-
-    let opciones = catalogo.map((p, i) => `<option value="${i}">${p.nombre}</option>`).join('');
-
     tr.innerHTML = `
       <td>
-        <select onchange="actualizarFila(this)" required>
-          <option value="">Seleccionar...</option>
-          ${opciones}
+        <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
+        <span class="last-price-hint"></span>
+      </td>
+      <td><input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)"></td>
+      <td><input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)"></td>
+      <td>
+        <select class="iva-select" onchange="calcularFila(this)">
+          <option value="0.16">16%</option>
+          <option value="0.00">0%</option>
         </select>
       </td>
-      <td><input type="text" class="desc" readonly></td>
-      <td><input type="number" class="precio" step="0.01" readonly></td>
-      <td><input type="number" class="cant" value="1" min="1" onchange="calcularTotal()" onkeyup="calcularTotal()"></td>
-      <td><input type="number" class="subtotal" step="0.01" readonly></td>
+      <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
     `;
     tbody.appendChild(tr);
   }
-
-  function actualizarFila(select) {
-    const row = select.closest('tr');
-    const prod = catalogo[select.value];
-    if (prod) {
-      row.querySelector('.desc').value = prod.descripcion || '';
-      row.querySelector('.precio').value = prod.precio || 0;
-    } else {
-      row.querySelector('.desc').value = '';
-      row.querySelector('.precio').value = '';
-    }
-    calcularTotal();
-  }
-
-  function calcularTotal() {
-    let total = 0;
-    document.querySelectorAll('#filas tr').forEach(row => {
-      const precio = parseFloat(row.querySelector('.precio').value) || 0;
-      const cant = parseFloat(row.querySelector('.cant').value) || 0;
-      const sub = precio * cant;
-      row.querySelector('.subtotal').value = sub.toFixed(2);
-      total += sub;
-    });
-    document.getElementById('totalText').innerText = total.toFixed(2);
-  }
-
-  async function guardarRemision(e) {
-    e.preventDefault();
-    const btn = document.getElementById('btnGuardar');
-    btn.disabled = true;
-    btn.innerText = "Guardando...";
-
-    const items = [];
-    document.querySelectorAll('#filas tr').forEach(row => {
-      const select = row.querySelector('select');
-      if (select.value !== "") {
-        const prod = catalogo[select.value];
-        items.push({
-          nombre: prod.nombre,
-          precio: prod.precio,
-          cantidad: parseFloat(row.querySelector('.cant').value),
-          subtotal: parseFloat(row.querySelector('.subtotal').value)
-        });
-      }
-    });
-
-    const payload = {
-      cliente: document.getElementById('cliente').value,
-      items: items,
-      total: parseFloat(document.getElementById('totalText').innerText)
-    };
-
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        alert('Remisión ' + result.folio + ' guardada exitosamente.');
-        window.location.reload();
-      } else {
-        alert('Error al guardar: ' + result.message);
-      }
-    } catch (err) {
-      alert('Ocurrió un error al enviar la remisión.');
-      console.error(err);
-    } finally {
-      btn.disabled = false;
-      btn.innerText = "Guardar Remisión";
-    }
-  }
 </script>
+
 </body>
 </html>
