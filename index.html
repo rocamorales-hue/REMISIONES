@@ -44,8 +44,10 @@
     .invoice-card {
       background: #fff;
       padding: 30px;
+      padding-bottom: 40px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       border-radius: 4px;
+      position: relative;
     }
 
     /* Encabezado */
@@ -171,6 +173,8 @@
     .btn:hover { background-color: #1a3c1e; }
     .btn-pdf { background-color: #d9534f; }
     .btn-pdf:hover { background-color: #c9302c; }
+    .btn-print { background-color: #0275d8; }
+    .btn-print:hover { background-color: #025aa5; }
     .btn-reset { background-color: #6c757d; }
     .btn-reset:hover { background-color: #5a6268; }
     .btn-remove {
@@ -188,6 +192,7 @@
       display: flex;
       justify-content: space-between;
       margin-top: 15px;
+      margin-bottom: 20px;
     }
     .obs-box {
       width: 58%;
@@ -222,8 +227,44 @@
       color: #333;
     }
 
-    /* Formato para Exportar a PDF */
+    /* Barra verde al pie de página */
+    .footer-bar {
+      display: none;
+      width: 100%;
+      height: 8px;
+      background-color: #1a3c1e;
+      margin-top: 20px;
+    }
+
+    /* Formato para Exportar a PDF e Imprimir */
     .print-value { display: none; }
+
+    @media print {
+      body {
+        background-color: #fff;
+        padding: 0;
+      }
+      .top-bar, .no-print, input, select, textarea, .btn-remove, .last-price-hint {
+        display: none !important;
+      }
+      .container-wrapper {
+        max-width: 100%;
+      }
+      .invoice-card {
+        box-shadow: none;
+        padding: 0;
+      }
+      .print-value {
+        display: inline-block !important;
+        width: 100%;
+      }
+      .footer-bar {
+        display: block !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+      }
+    }
 
     body.printing-pdf input, 
     body.printing-pdf select, 
@@ -242,6 +283,10 @@
     body.printing-pdf .items-table td {
       padding: 6px;
     }
+
+    body.printing-pdf .footer-bar {
+      display: block !important;
+    }
   </style>
 </head>
 <body>
@@ -253,6 +298,7 @@
     <div class="top-bar-title">Panel de Cotizaciones</div>
     <div class="top-bar-buttons">
       <button class="btn btn-reset" onclick="nuevoFormulario()">📄 Nuevo / Borrar Datos</button>
+      <button class="btn btn-print" onclick="imprimirDocumento()">🖨️ Imprimir</button>
       <button class="btn btn-pdf" onclick="descargarPDF()">📥 Descargar PDF</button>
     </div>
   </div>
@@ -916,6 +962,9 @@
       </table>
     </div>
 
+    <!-- Barra Verde Pie de Página -->
+    <div class="footer-bar"></div>
+
   </div>
 </div>
 
@@ -1050,8 +1099,8 @@
     }
   }
 
-  function descargarPDF() {
-    // 1. Preparar campos de encabezado y cliente para la vista de impresión
+  function prepararVistaPrint() {
+    // Preparar campos de encabezado y cliente para impresión/PDF
     document.getElementById('printFecha').textContent = document.getElementById('fechaInput').value || '-';
     document.getElementById('printRef').textContent = document.getElementById('refInput').value || '-';
     
@@ -1063,7 +1112,7 @@
     
     document.getElementById('printObs').textContent = document.getElementById('obsInput').value || '';
 
-    // 2. Preparar filas de tabla
+    // Preparar filas de tabla
     const filas = document.querySelectorAll('#tablaProductos tbody tr');
     filas.forEach(row => {
       const prodVal = row.querySelector('.prod-input').value;
@@ -1078,17 +1127,25 @@
       printSpans[2].textContent = puVal ? `$ ${parseFloat(puVal).toFixed(2)}` : '$ 0.00';
       printSpans[3].textContent = ivaVal;
     });
+  }
 
-    // 3. Renderizar y exportar a PDF
+  function imprimirDocumento() {
+    prepararVistaPrint();
+    window.print();
+  }
+
+  function descargarPDF() {
+    prepararVistaPrint();
+
     document.body.classList.add('printing-pdf');
 
     const elemento = document.getElementById('cotizacionDoc');
     const opciones = {
-      margin:       [8, 8, 8, 8],
-      filename:     `Cotizacion_${document.getElementById('refInput').value || 'documento'}.pdf`,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin:        [8, 8, 12, 8],
+      filename:      `Cotizacion_${document.getElementById('refInput').value || 'documento'}.pdf`,
+      image:         { type: 'jpeg', quality: 0.98 },
+      html2canvas:   { scale: 2, useCORS: true },
+      jsPDF:         { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opciones).from(elemento).save().then(() => {
