@@ -975,6 +975,11 @@
     agregarFila();
   };
 
+  // Función aux para formatear números con comas y 2 decimales
+  function formatearMoneda(monto) {
+    return monto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
   function agregarFila() {
     const tbody = document.querySelector('#tablaProductos tbody');
     const tr = document.createElement('tr');
@@ -1026,8 +1031,9 @@
     if (prodName) {
       const ultimoPrecio = localStorage.getItem('precio_' + prodName);
       if (ultimoPrecio !== null) {
-        hintSpan.textContent = `Último precio: $${ultimoPrecio}`;
-        precioInput.value = ultimoPrecio;
+        const valNum = parseFloat(ultimoPrecio);
+        hintSpan.textContent = `Último precio: $${formatearMoneda(valNum)}`;
+        precioInput.value = valNum;
         calcularFila(precioInput);
       } else {
         hintSpan.textContent = 'Sin historial';
@@ -1043,8 +1049,8 @@
     const precioVal = parseFloat(input.value);
 
     if (prodName && !isNaN(precioVal)) {
-      localStorage.setItem('precio_' + prodName, precioVal.toFixed(2));
-      row.querySelector('.last-price-hint').textContent = `Último precio: $${precioVal.toFixed(2)}`;
+      localStorage.setItem('precio_' + prodName, precioVal.toString());
+      row.querySelector('.last-price-hint').textContent = `Último precio: $${formatearMoneda(precioVal)}`;
     }
     calcularFila(input);
   }
@@ -1055,7 +1061,7 @@
     const pu = parseFloat(row.querySelector('.precio-input').value) || 0;
     
     const importe = cant * pu;
-    row.querySelector('.importe-td').textContent = `$ ${importe.toFixed(2)}`;
+    row.querySelector('.importe-td').textContent = `$ ${formatearMoneda(importe)}`;
 
     actualizarTotalesGenerales();
   }
@@ -1077,9 +1083,9 @@
 
     const total = subtotal + totalIva;
 
-    document.getElementById('subtotalGral').textContent = `$ ${subtotal.toFixed(2)}`;
-    document.getElementById('ivaGral').textContent = `$ ${totalIva.toFixed(2)}`;
-    document.getElementById('totalGral').textContent = `$ ${total.toFixed(2)}`;
+    document.getElementById('subtotalGral').textContent = `$ ${formatearMoneda(subtotal)}`;
+    document.getElementById('ivaGral').textContent = `$ ${formatearMoneda(totalIva)}`;
+    document.getElementById('totalGral').textContent = `$ ${formatearMoneda(total)}`;
   }
 
   function nuevoFormulario() {
@@ -1117,14 +1123,14 @@
     filas.forEach(row => {
       const prodVal = row.querySelector('.prod-input').value;
       const cantVal = row.querySelector('.cant-input').value;
-      const puVal = row.querySelector('.precio-input').value;
+      const puVal = parseFloat(row.querySelector('.precio-input').value) || 0;
       const ivaSelect = row.querySelector('.iva-select');
       const ivaVal = ivaSelect.options[ivaSelect.selectedIndex].text;
 
       const printSpans = row.querySelectorAll('.print-value');
       printSpans[0].textContent = prodVal;
       printSpans[1].textContent = cantVal;
-      printSpans[2].textContent = puVal ? `$ ${parseFloat(puVal).toFixed(2)}` : '$ 0.00';
+      printSpans[2].textContent = `$ ${formatearMoneda(puVal)}`;
       printSpans[3].textContent = ivaVal;
     });
   }
