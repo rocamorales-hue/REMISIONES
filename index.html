@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horario Escolar S2A ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <title>Horario Escolar S2A</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -14,10 +14,8 @@
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #fff5f8;
-            background-image: radial-gradient(#ffd8e4 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #5a4b51;
+            background-color: #fcf0f4;
+            color: #4a3e43;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,137 +26,116 @@
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 950px;
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(235, 120, 160, 0.15);
-            border: 2px solid #ffe3ec;
+            max-width: 1000px;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(220, 140, 165, 0.15);
+            border: 2px solid #f9d8e2;
         }
 
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         header h1 {
             font-family: 'Poppins', sans-serif;
-            color: #ff6b98;
-            font-size: 2.2rem;
-            margin-bottom: 5px;
+            color: #e06287;
+            font-size: 2rem;
             letter-spacing: 1px;
-        }
-
-        header p {
-            color: #9e7f8d;
-            font-size: 1rem;
-            font-weight: bold;
+            text-transform: uppercase;
         }
 
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
             text-align: center;
-            background-color: #fff;
+            background-color: #ffffff;
+            border: 2px solid #f2b6c6;
+        }
+
+        /* Ancho fijo e igual para las columnas de días */
+        col.col-hora {
+            width: 15%;
+        }
+        col.col-dia {
+            width: 17%;
+        }
+
+        th, td {
+            border: 1px solid #f5c2d0;
+            padding: 8px 4px;
+            word-wrap: break-word;
         }
 
         th {
-            background-color: #ffb3c6;
+            background-color: #f7a8be;
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            padding: 14px 10px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        th:first-child {
-            border-top-left-radius: 12px;
-        }
-
-        th:last-child {
-            border-top-right-radius: 12px;
+            padding: 12px 4px;
         }
 
         td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #ffeef2;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            color: #634d58;
-            transition: all 0.2s ease;
-        }
-
-        tr:hover td {
-            background-color: #fff0f4;
+            color: #524048;
+            vertical-align: middle;
         }
 
         .hora {
-            background-color: #fff0f5;
-            color: #d85a82;
+            background-color: #fdf0f4;
+            color: #c94a70;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             white-space: nowrap;
         }
 
-        /* Estilo para bloques especiales (Recepción y Recreo) */
         .especial {
-            background-color: #ffe6ed !important;
-            color: #ff477e !important;
-            font-weight: bold;
-            font-size: 0.95rem;
+            background-color: #fcdbe4;
+            color: #d13b68;
+            font-weight: 700;
+            font-size: 0.9rem;
             letter-spacing: 0.5px;
         }
 
         footer {
-            margin-top: 25px;
+            margin-top: 20px;
             text-align: center;
             padding-top: 15px;
-            border-top: 2px dashed #ffe3ec;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            border-top: 1px solid #f9d8e2;
         }
 
         .tutor-badge {
-            background-color: #ffe6ee;
-            color: #d84a75;
-            padding: 8px 18px;
-            border-radius: 20px;
+            display: inline-block;
+            background-color: #fde8ef;
+            color: #c94a70;
+            padding: 6px 20px;
+            border-radius: 12px;
             font-weight: 700;
             font-size: 0.95rem;
+            border: 1px solid #f7c5d3;
         }
 
-        .decorative-stars {
-            color: #ff85a2;
-            font-size: 1.1rem;
-        }
-
-        /* Responsive para celulares */
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 12px;
             }
             header h1 {
-                font-size: 1.7rem;
+                font-size: 1.5rem;
             }
-            th, td {
-                padding: 8px 4px;
-                font-size: 0.8rem;
-            }
-            .hora {
+            td {
                 font-size: 0.75rem;
             }
-            footer {
-                justify-content: center;
+            .hora {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -167,56 +144,62 @@
 
     <div class="container">
         <header>
-            <h1>HORARIO S2A 🎀</h1>
-            <p>Ciclo Escolar ✨</p>
+            <h1>HORARIO S2A</h1>
         </header>
 
         <div class="table-wrapper">
             <table>
+                <colgroup>
+                    <col class="col-hora">
+                    <col class="col-dia">
+                    <col class="col-dia">
+                    <col class="col-dia">
+                    <col class="col-dia">
+                    <col class="col-dia">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>Hora</th>
-                        <th>Lunes</th>
-                        <th>Martes</th>
-                        <th>Miércoles</th>
-                        <th>Jueves</th>
-                        <th>Viernes</th>
+                        <th>HORA</th>
+                        <th>LUNES</th>
+                        <th>MARTES</th>
+                        <th>MIÉRCOLES</th>
+                        <th>JUEVES</th>
+                        <th>VIERNES</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="hora">6:40 - 7:00</td>
-                        <td colspan="5" class="especial">Recepción de alumnos 🌷</td>
+                        <td colspan="5" class="especial">Recepción de alumnos</td>
                     </tr>
                     <tr>
                         <td class="hora">7:00 - 7:45</td>
                         <td rowspan="2">INGLÉS</td>
-                        <td>ARUKAY</td>
+                        <td rowspan="2">ARUKAY</td>
                         <td>DISEÑO</td>
                         <td>MATEMÁTICAS</td>
                         <td>INGLÉS</td>
                     </tr>
                     <tr>
                         <td class="hora">7:45 - 8:30</td>
-                        <td rowspan="2">ESPAÑOL</td>
                         <td rowspan="2">FÍSICA</td>
-                        <td rowspan="2">ESPAÑOL</td>
+                        <td rowspan="3">ESPAÑOL</td>
                         <td rowspan="3">Ctrl ∨</td>
                     </tr>
                     <tr>
                         <td class="hora">8:30 - 9:15</td>
                         <td>TUTORÍAS SOCIO-EMOCIONAL</td>
+                        <td>ESPAÑOL</td>
                     </tr>
                     <tr>
                         <td class="hora">9:15 - 10:00</td>
                         <td>MATEMÁTICAS</td>
                         <td>FRANCÉS</td>
                         <td>FRANCÉS</td>
-                        <td></td>
                     </tr>
                     <tr>
                         <td class="hora">10:00 - 10:30</td>
-                        <td colspan="5" class="especial">RECREO 🍓</td>
+                        <td colspan="5" class="especial">RECREO</td>
                     </tr>
                     <tr>
                         <td class="hora">10:30 - 11:15</td>
@@ -255,9 +238,7 @@
         </div>
 
         <footer>
-            <div class="decorative-stars">✦ 🌸 ✦</div>
             <div class="tutor-badge">Tutor: Vicente Guerrero</div>
-            <div class="decorative-stars">✦ 🌸 ✦</div>
         </footer>
     </div>
 
