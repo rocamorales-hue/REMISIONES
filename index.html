@@ -1,1167 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cotización / Factura</title>
-  <!-- html2pdf.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-    body {
-      background-color: #f4f4f4;
-      padding: 20px;
-      color: #333;
-    }
-    .container-wrapper {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    /* Barra superior de acciones */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      background: #ffffff;
-      padding: 12px 20px;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-    }
-    .top-bar-title {
-      font-weight: bold;
-      color: #1a3c1e;
-      font-size: 15px;
-    }
-    .top-bar-buttons {
-      display: flex;
-      gap: 10px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horario Escolar S2A ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .invoice-card {
-      background: #fff;
-      padding: 30px;
-      padding-bottom: 40px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 4px;
-      position: relative;
-    }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff5f8;
+            background-image: radial-gradient(#ffd8e4 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #5a4b51;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    /* Encabezado */
-    .top-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 25px;
-    }
-    .company-title {
-      font-weight: bold;
-      font-style: italic;
-      font-size: 18px;
-      color: #1a3c1e;
-    }
-    .company-info {
-      font-style: italic;
-      color: #666;
-      font-size: 13px;
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-    .meta-table {
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    .meta-table th {
-      border-bottom: 1px solid #ccc;
-      color: #555;
-      padding: 3px 8px;
-      text-align: right;
-    }
-    .meta-table td {
-      padding: 3px 0;
-      text-align: right;
-    }
-    .meta-input {
-      text-align: right;
-      font-weight: bold;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      padding: 3px 6px;
-      width: 130px;
-    }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 950px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(235, 120, 160, 0.15);
+            border: 2px solid #ffe3ec;
+        }
 
-    /* Sección Cliente */
-    .client-section {
-      margin-bottom: 25px;
-      font-size: 13px;
-    }
-    .client-col h4 {
-      margin: 0 0 8px 0;
-      border-bottom: 2px solid #2b4c20;
-      padding-bottom: 3px;
-      color: #1a3c1e;
-    }
-    .client-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .client-grid input {
-      width: 100%;
-      padding: 5px 8px;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      font-size: 13px;
-    }
-    .full-width {
-      grid-column: span 2;
-    }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
 
-    /* Tabla de Productos */
-    .items-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 15px;
-      font-size: 13px;
-    }
-    .items-table th {
-      background-color: #2b4c20;
-      color: white;
-      text-align: left;
-      padding: 8px;
-      font-weight: normal;
-    }
-    .items-table td {
-      border: 1px solid #ccc;
-      padding: 4px;
-    }
-    .items-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    
-    input[type="text"], input[type="number"], input[type="date"], select {
-      padding: 5px 6px;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      font-size: 13px;
-    }
-    input:focus, select:focus {
-      outline: 1px solid #2b4c20;
-      background-color: #f0fff0;
-    }
-    .last-price-hint {
-      font-size: 10px;
-      color: #28a745;
-      display: block;
-      margin-top: 2px;
-      font-weight: bold;
-    }
+        header h1 {
+            font-family: 'Poppins', sans-serif;
+            color: #ff6b98;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
 
-    /* Botones */
-    .btn {
-      background-color: #2b4c20;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-    .btn:hover { background-color: #1a3c1e; }
-    .btn-pdf { background-color: #d9534f; }
-    .btn-pdf:hover { background-color: #c9302c; }
-    .btn-print { background-color: #0275d8; }
-    .btn-print:hover { background-color: #025aa5; }
-    .btn-reset { background-color: #6c757d; }
-    .btn-reset:hover { background-color: #5a6268; }
-    .btn-remove {
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 2px 6px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 11px;
-    }
+        header p {
+            color: #9e7f8d;
+            font-size: 1rem;
+            font-weight: bold;
+        }
 
-    /* Totales y Observaciones */
-    .totals-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-      margin-bottom: 20px;
-    }
-    .obs-box {
-      width: 58%;
-      font-size: 13px;
-    }
-    .obs-box h5 {
-      margin: 0 0 5px 0;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 3px;
-      color: #1a3c1e;
-    }
-    .obs-box textarea {
-      width: 100%;
-      height: 70px;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      padding: 5px;
-      font-size: 12px;
-      resize: none;
-    }
-    .totals-table {
-      width: 38%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    .totals-table td {
-      padding: 5px;
-      text-align: right;
-    }
-    .totals-table tr td:first-child {
-      font-weight: bold;
-      color: #333;
-    }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
 
-    /* Barra verde al pie de página */
-    .footer-bar {
-      display: none;
-      width: 100%;
-      height: 8px;
-      background-color: #1a3c1e;
-      margin-top: 20px;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            background-color: #fff;
+        }
 
-    /* Formato para Exportar a PDF e Imprimir */
-    .print-value { display: none; }
+        th {
+            background-color: #ffb3c6;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            padding: 14px 10px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    @media print {
-      body {
-        background-color: #fff;
-        padding: 0;
-      }
-      .top-bar, .no-print, input, select, textarea, .btn-remove, .last-price-hint {
-        display: none !important;
-      }
-      .container-wrapper {
-        max-width: 100%;
-      }
-      .invoice-card {
-        box-shadow: none;
-        padding: 0;
-      }
-      .print-value {
-        display: inline-block !important;
-        width: 100%;
-      }
-      .footer-bar {
-        display: block !important;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-      }
-    }
+        th:first-child {
+            border-top-left-radius: 12px;
+        }
 
-    body.printing-pdf input, 
-    body.printing-pdf select, 
-    body.printing-pdf textarea, 
-    body.printing-pdf .btn-remove, 
-    body.printing-pdf .last-price-hint,
-    body.printing-pdf .no-print {
-      display: none !important;
-    }
+        th:last-child {
+            border-top-right-radius: 12px;
+        }
 
-    body.printing-pdf .print-value {
-      display: inline-block !important;
-      width: 100%;
-    }
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #ffeef2;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #634d58;
+            transition: all 0.2s ease;
+        }
 
-    body.printing-pdf .items-table td {
-      padding: 6px;
-    }
+        tr:hover td {
+            background-color: #fff0f4;
+        }
 
-    body.printing-pdf .footer-bar {
-      display: block !important;
-    }
-  </style>
+        .hora {
+            background-color: #fff0f5;
+            color: #d85a82;
+            font-weight: 700;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        /* Estilo para bloques especiales (Recepción y Recreo) */
+        .especial {
+            background-color: #ffe6ed !important;
+            color: #ff477e !important;
+            font-weight: bold;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 2px dashed #ffe3ec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tutor-badge {
+            background-color: #ffe6ee;
+            color: #d84a75;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .decorative-stars {
+            color: #ff85a2;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive para celulares */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 1.7rem;
+            }
+            th, td {
+                padding: 8px 4px;
+                font-size: 0.8rem;
+            }
+            .hora {
+                font-size: 0.75rem;
+            }
+            footer {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container-wrapper">
+    <div class="container">
+        <header>
+            <h1>HORARIO S2A 🎀</h1>
+            <p>Ciclo Escolar ✨</p>
+        </header>
 
-  <!-- Barra de acciones -->
-  <div class="top-bar">
-    <div class="top-bar-title">Panel de Cotizaciones</div>
-    <div class="top-bar-buttons">
-      <button class="btn btn-reset" onclick="nuevoFormulario()">📄 Nuevo / Borrar Datos</button>
-      <button class="btn btn-print" onclick="imprimirDocumento()">🖨️ Imprimir</button>
-      <button class="btn btn-pdf" onclick="descargarPDF()">📥 Descargar PDF</button>
-    </div>
-  </div>
-
-  <!-- Cotización -->
-  <div class="invoice-card" id="cotizacionDoc">
-    
-    <!-- Encabezado -->
-    <div class="top-header">
-      <div>
-        <div class="company-title">COMERCIAL Y SERVICIOS AGRICOLAS MG, S DE RL DE CV</div>
-        <div class="company-info">
-          CSA190827LE7<br>
-          PRIV. MOTTOLA NO. 2 COL. VILLA BONITA, HERMOSILLO, SON.<br>
-          WHATSAPP. 662 339 7323<br>
-          cafesierraescondida@gmail.com
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="hora">6:40 - 7:00</td>
+                        <td colspan="5" class="especial">Recepción de alumnos 🌷</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">7:00 - 7:45</td>
+                        <td rowspan="2">INGLÉS</td>
+                        <td>ARUKAY</td>
+                        <td>DISEÑO</td>
+                        <td>MATEMÁTICAS</td>
+                        <td>INGLÉS</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">7:45 - 8:30</td>
+                        <td rowspan="2">ESPAÑOL</td>
+                        <td rowspan="2">FÍSICA</td>
+                        <td rowspan="2">ESPAÑOL</td>
+                        <td rowspan="3">Ctrl ∨</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">8:30 - 9:15</td>
+                        <td>TUTORÍAS SOCIO-EMOCIONAL</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">9:15 - 10:00</td>
+                        <td>MATEMÁTICAS</td>
+                        <td>FRANCÉS</td>
+                        <td>FRANCÉS</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="hora">10:00 - 10:30</td>
+                        <td colspan="5" class="especial">RECREO 🍓</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">10:30 - 11:15</td>
+                        <td rowspan="2">MÚSICA</td>
+                        <td rowspan="2">FÍSICA</td>
+                        <td>MATEMÁTICAS</td>
+                        <td>INGLÉS</td>
+                        <td>ESPAÑOL</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">11:15 - 12:00</td>
+                        <td rowspan="2">ESPAÑOL</td>
+                        <td>HISTORIA</td>
+                        <td rowspan="2">FÍSICA</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">12:00 - 12:45</td>
+                        <td>FÍSICA</td>
+                        <td>INGLÉS</td>
+                        <td>CÍVICA Y ÉTICA</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">12:45 - 1:30</td>
+                        <td rowspan="2">HISTORIA</td>
+                        <td rowspan="2">MATEMÁTICAS</td>
+                        <td rowspan="2">INGLÉS</td>
+                        <td rowspan="2">ARTE</td>
+                        <td>CÍVICA Y ÉTICA</td>
+                    </tr>
+                    <tr>
+                        <td class="hora">1:30 - 2:20</td>
+                        <td>HISTORIA</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-      </div>
-      <div>
-        <table class="meta-table">
-          <tr><th>Fecha</th></tr>
-          <tr>
-            <td>
-              <input type="date" id="fechaInput" class="meta-input">
-              <span class="print-value" id="printFecha"></span>
-            </td>
-          </tr>
-          <tr><th>Referencia</th></tr>
-          <tr>
-            <td>
-              <input type="text" id="refInput" class="meta-input" placeholder="Ej. CES-20092025">
-              <span class="print-value" id="printRef"></span>
-            </td>
-          </tr>
-        </table>
-      </div>
+
+        <footer>
+            <div class="decorative-stars">✦ 🌸 ✦</div>
+            <div class="tutor-badge">Tutor: Vicente Guerrero</div>
+            <div class="decorative-stars">✦ 🌸 ✦</div>
+        </footer>
     </div>
-
-    <!-- Sección Cliente -->
-    <div class="client-section">
-      <div class="client-col">
-        <h4>Datos del Cliente</h4>
-        <div class="client-grid">
-          <div class="full-width">
-            <input type="text" id="clienteNombre" list="lista-clientes" placeholder="Escribe un cliente o razón social...">
-            <span class="print-value" id="printClienteNombre" style="font-weight: bold;"></span>
-          </div>
-          <div>
-            <input type="text" id="clienteRfc" placeholder="RFC">
-            <span class="print-value" id="printClienteRfc"></span>
-          </div>
-          <div>
-            <input type="text" id="clienteTel" placeholder="Teléfono">
-            <span class="print-value" id="printClienteTel"></span>
-          </div>
-          <div class="full-width">
-            <input type="text" id="clienteDir" placeholder="Dirección Completa">
-            <span class="print-value" id="printClienteDir"></span>
-          </div>
-          <div class="full-width">
-            <input type="text" id="clienteEmail" placeholder="Correo Electrónico">
-            <span class="print-value" id="printClienteEmail"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lista autocompletable de Clientes -->
-    <datalist id="lista-clientes">
-      <option value="ADRIANA FELICIAN">
-      <option value="ADRIANA LARIOS GUTIERREZ">
-      <option value="AGRICOLA CACTUS">
-      <option value="AIDA HERNANDEZ">
-      <option value="ALAN ARAUJO PEREZ">
-      <option value="ALAN DUARTE">
-      <option value="ALAN RODRIGUEZ">
-      <option value="ALE TAPIA">
-      <option value="ALE GALLARDO">
-      <option value="ALEJANDRA">
-      <option value="ALEJANDRA NAVARRO PILATES">
-      <option value="ALEJANDRO CARDENAS">
-      <option value="ALEJANDRO ARAUJO">
-      <option value="ALEJANDRO RUBIO">
-      <option value="ALEJANDRO MERCADO">
-      <option value="ALEYDA JARA">
-      <option value="ALMA DELIA COTA">
-      <option value="ALONSO CORDOVA">
-      <option value="ALSANA CAFE">
-      <option value="ANA">
-      <option value="ANA CELIA">
-      <option value="ANABEL PEÑA">
-      <option value="ANA CELIA FUENTES">
-      <option value="ANALU">
-      <option value="ANA MARIA CARPIO">
-      <option value="ANDRES MENDEZ">
-      <option value="ANGEL CORONEL">
-      <option value="ANGEL CABORCA">
-      <option value="ANGELICA BOSQUEZ">
-      <option value="ARBOL DE VIDA">
-      <option value="ARIEL ESTRADA">
-      <option value="ARIEL ABARCA">
-      <option value="ARMANDO SERRANO">
-      <option value="ARNOLDO GUTIERREZ">
-      <option value="ASTURIAS RESIDENCIAL">
-      <option value="BANCO DE SANGRE">
-      <option value="BARUK MALDONADO">
-      <option value="BEJORI CONCEPT">
-      <option value="BERENICE PEREZ">
-      <option value="BETO YANES">
-      <option value="BODEGA AGROVAL">
-      <option value="BRAULIO TELLEZ">
-      <option value="BRENDA MALDONADO">
-      <option value="BRONCH RESTAURANTE">
-      <option value="BURPEES CAFE">
-      <option value="CAFE DE MAR">
-      <option value="CAFE LA CHONA">
-      <option value="CAFE MERCADO H69">
-      <option value="CAMBRIDGE HILLS">
-      <option value="CANDY GUTIERREZ">
-      <option value="CANELO">
-      <option value="CARLOS CAÑEZ">
-      <option value="CARLOS ABRIL">
-      <option value="CARLOS FELIPE SALAZAR">
-      <option value="CARLOS FLORES">
-      <option value="CARLOS KITAZAWA">
-      <option value="CARLOS LARIOS">
-      <option value="CARLOS ENCINAS">
-      <option value="CARMEN ROSA">
-      <option value="CARMEN MA">
-      <option value="CAROLINA MIZQUEZ">
-      <option value="CAROLINA CADILLO">
-      <option value="CAROLINA MEZA">
-      <option value="CASA GARMENDIA SUC. CENTRO">
-      <option value="CASA ALICIA CAFE">
-      <option value="CASA DEL SOL CAFE">
-      <option value="CASA GARMENDIA SUC. MORELOS">
-      <option value="CASA GARMENDIA SUC. LOS MOCHIS">
-      <option value="Catalina Café">
-      <option value="CATALINA BARTOLOME CORTES">
-      <option value="CECILIA">
-      <option value="CECILIA LOPEZ CABALLERO">
-      <option value="CEDAE">
-      <option value="CELESTE CANO">
-      <option value="CESAR DE DIEGO">
-      <option value="CHAPO MENDEZ">
-      <option value="CHINO MORALES">
-      <option value="CHRISTIAN CACHI">
-      <option value="CHUY GRIJALVA">
-      <option value="CLAUDIA MIRANDA">
-      <option value="CLAUDIO LARIOS GUTIERREZ">
-      <option value="CLAUDIO PEREZ">
-      <option value="COCO HURTADO">
-      <option value="COMISION NACIONAL DEL AGUA">
-      <option value="COMPU ENLACES">
-      <option value="concept store">
-      <option value="CONCEPT STORE">
-      <option value="CONGRESO DEL ESTADO DE SONORA">
-      <option value="CORNAMENTA COFFEE SHOP">
-      <option value="CRISTINA GARCIA">
-      <option value="CRISTINA MADERO">
-      <option value="CRISTOBAL">
-      <option value="DAB LEGAL">
-      <option value="DAMARIS">
-      <option value="DANIEL PALAFOX">
-      <option value="DANIEL MADERO LARIOS">
-      <option value="DANNIA COTA">
-      <option value="DAVID MORENO">
-      <option value="DAVID MORALES">
-      <option value="DAVID BARTON">
-      <option value="DAVID BARRERA">
-      <option value="DE LOS POTREROS">
-      <option value="DENIA CAROLINA TRISTAN">
-      <option value="DENISSE RODRIGUEZ">
-      <option value="DESIERTO LUNA">
-      <option value="DETOX JUGOS Y LICUADOS">
-      <option value="DIANA">
-      <option value="DIEGO OSORNO">
-      <option value="DONARAMA">
-      <option value="ECATL CAÑEZ">
-      <option value="E DESARROLLOS Y TECNOLOGIA">
-      <option value="EDGAR NAVAREZ">
-      <option value="EDGARDO MARTINEZ PAPA">
-      <option value="EDGARDO ROBLES">
-      <option value="EDGARDO MARTINEZ">
-      <option value="EDMUNDO CHAVEZ">
-      <option value="EDUARDO ORTEGA YEOMANS">
-      <option value="EL PORTON NAVARRETE">
-      <option value="EL MANDADITO">
-      <option value="ELIZABETH ZAYAS">
-      <option value="ELY">
-      <option value="EMIR JUSIC">
-      <option value="ENRIQUE VEGA">
-      <option value="ENRIQUE GOMEZ">
-      <option value="ERNESTINA">
-      <option value="ERNESTINA LOPEZ">
-      <option value="ERNESTO MACIAS">
-      <option value="EVA MAZARIEGO">
-      <option value="EVA JUPPA">
-      <option value="FABIAN BELTRAN">
-      <option value="FABIAN ARAUJO PEREZ">
-      <option value="FABIAN ARAUJO">
-      <option value="FANNY LARIOS">
-      <option value="FARJAT">
-      <option value="FATIMA">
-      <option value="FELICITAS CAFE">
-      <option value="FELIPE LARIOS">
-      <option value="FELIX TARAZON">
-      <option value="FERNANDA GALINDO">
-      <option value="FERNANDA MORALES">
-      <option value="FERNANDA LARIOS">
-      <option value="FERNANDO MORALES">
-      <option value="FERNANDO TRIBUNAL">
-      <option value="FERNANDO CONTRERAS">
-      <option value="FIDESON">
-      <option value="FILIBERTO CARO">
-      <option value="FIVI">
-      <option value="FRANCIS">
-      <option value="FRANCISCO">
-      <option value="FRESLI MART">
-      <option value="GABRIELA RODRIGUEZ">
-      <option value="GABRIEL RISEN">
-      <option value="georgione 82">
-      <option value="GERMAN ONTIVEROS">
-      <option value="GIL ISLAS">
-      <option value="GIORGIONE 91">
-      <option value="GLADYS CASTELLANOS">
-      <option value="GLORIA LANDEROS">
-      <option value="GNR">
-      <option value="GRECIA CAMACHO">
-      <option value="GUILLERMO MOLINARES">
-      <option value="GUILLERMO GARCIA">
-      <option value="GUSTAVO ARCE">
-      <option value="HAYDEE MEDINA">
-      <option value="HECTOR MARTINEZ">
-      <option value="HECTOR BRINGAS">
-      <option value="HILDEGARDO HERNANDEZ">
-      <option value="HUGO CHAIDEZ">
-      <option value="IDALIA VERDUZCO">
-      <option value="INBAS">
-      <option value="INES CORTES">
-      <option value="ING GAMBA">
-      <option value="ISABEL">
-      <option value="ISLAS">
-      <option value="IVAN GALAZ">
-      <option value="IVANI VALENZUELA">
-      <option value="IVETH MARTINEZ">
-      <option value="JACOBO CORRAL">
-      <option value="JAPSON">
-      <option value="JAQUELINE ORANTES">
-      <option value="JARDA 34">
-      <option value="JAVIER">
-      <option value="JAVIER MORALES">
-      <option value="JENNY MERAZ">
-      <option value="JESSIE CASTELLANOS">
-      <option value="JESUS GRIJALVA">
-      <option value="JESUS CONS">
-      <option value="JESUS BOJORQUEZ">
-      <option value="JESUS PARRA">
-      <option value="JETOUR">
-      <option value="JIU-JITSU JOHN SHARPE">
-      <option value="JOEL CORELLA">
-      <option value="JOHNATAN GILJE">
-      <option value="JONATAN 26">
-      <option value="JORGE MARTÍNEZ FELIX">
-      <option value="JORGE RAMÍREZ">
-      <option value="JORGE CALLES">
-      <option value="JOSE BERNARDO MACHADO">
-      <option value="JOSE ALAN">
-      <option value="JOSE LUIS">
-      <option value="JOSE PORTI">
-      <option value="JOSE ROBERTO GALINDO">
-      <option value="JUAN CARLOS MORENO">
-      <option value="JUAN LARIOS">
-      <option value="JULIO ROMERO">
-      <option value="JUZGADO 3ERO MERCANTIL">
-      <option value="KARLA">
-      <option value="KARLA VALLEJO">
-      <option value="LA CASA DEL PADDEL HERMOSILLO">
-      <option value="LA CASONA">
-      <option value="LA DESPENSA">
-      <option value="LA MALEZA CAFE">
-      <option value="LANZI 44">
-      <option value="LA TIZNADA">
-      <option value="LAURA MARTINEZ">
-      <option value="LA VOZ DEL PITIC">
-      <option value="LEGATUM ARELY">
-      <option value="LETICIA DAVILA">
-      <option value="LIC. GRACIELA ECHEGARAY">
-      <option value="LMI COMEDORES">
-      <option value="LOMBRIZ SNACKS">
-      <option value="LORENIA">
-      <option value="LUIS POMPA">
-      <option value="LUIS NOE AGUILAR">
-      <option value="LUIS FERNANDO LÓPEZ">
-      <option value="LUIS DEL GRANDE">
-      <option value="LUIS ALBERTO MEDINA">
-      <option value="LUIS URUCHURTU">
-      <option value="LUIS TERAN">
-      <option value="LUIS QUESOS Y QUESOS">
-      <option value="LULY ARAUJO">
-      <option value="LUPITA BOJORQUEZ">
-      <option value="LUZ GRISELDA MIRANDA">
-      <option value="MANDADITO SUC. NAVARRETE">
-      <option value="MANDADITO SUC. PERISUR">
-      <option value="MANDADITO SUC. QUIROGA">
-      <option value="MANDADITO SUC. JUAREZ">
-      <option value="MANOY SALON SPA">
-      <option value="MANUEL PESQUEIRA">
-      <option value="MANUELA PASEO SANTA FE">
-      <option value="MARCO VILLA LOURDES">
-      <option value="MARCO GONZALEZ">
-      <option value="MARCO ANTONIO GONZALEZ">
-      <option value="MARCO ANTONIO VILLA">
-      <option value="MARCOS HERNANDEZ">
-      <option value="MARÍA DEL CARMEN">
-      <option value="MARÍA ALFONSA LARIOS">
-      <option value="MARÍA ESTHER CORTÉS GUTIERREZ">
-      <option value="MARIA EUGENIA">
-      <option value="MARIBEL LEÓN">
-      <option value="MARIBEL EURO STANZA">
-      <option value="MARIO ROJO">
-      <option value="MARITZA">
-      <option value="MARTA MONGE">
-      <option value="MARTA ORTIZ">
-      <option value="MARTHA AGUAYO">
-      <option value="MARTHA MONGE">
-      <option value="MARTÍN CHÓFER">
-      <option value="MARTIN CAFETERIA">
-      <option value="MARY PILATES">
-      <option value="MAYRA RUIZ">
-      <option value="MAYUKI">
-      <option value="MEGA FRUT">
-      <option value="MELANIE">
-      <option value="MELISA RAMOS">
-      <option value="MELISSA KRAUSS">
-      <option value="MELY PACHECO">
-      <option value="MEÑO LARIOS">
-      <option value="MIGUEL ANGEL CASTELLANOS">
-      <option value="MITSUBISHI">
-      <option value="MONICA SILVA">
-      <option value="MOUNTAR">
-      <option value="MYZAEL TRUJILLO">
-      <option value="NACORI GRANDE 285">
-      <option value="NATALIA NAVARRO">
-      <option value="NATALIE BERNAL">
-      <option value="NELLY CORDOVA">
-      <option value="NIVARDO">
-      <option value="NONO CHAVEZ">
-      <option value="NORMA HERRERA">
-      <option value="N ROUTE">
-      <option value="OFICINA ABRAHAM - SECO">
-      <option value="ONZA RESTAURANTE">
-      <option value="ORLANDO ESCOBAR">
-      <option value="OSCAR">
-      <option value="OSCAR CASTRO">
-      <option value="PABLO BARBER">
-      <option value="PALOMA PORCHAS">
-      <option value="PAMELA RAMOS">
-      <option value="PANA LUCERO">
-      <option value="PAOLA MORENO">
-      <option value="PASHO">
-      <option value="PATTY GODOY">
-      <option value="PATY ESPINOZA">
-      <option value="PECUARIA SONORENSE">
-      <option value="PEDRO TERÁN">
-      <option value="PEPE FABRETT">
-      <option value="PESCADERÍA MACROSEAFOOD">
-      <option value="PETRUS CAFE">
-      <option value="POLLO CIEGO">
-      <option value="POLLO CAMPOS">
-      <option value="PORTON DEL SABOR">
-      <option value="PORTON ANA SOFIA">
-      <option value="PROFOODS">
-      <option value="PSICÓLOGA JUZGADO 3RO FAMILIAR">
-      <option value="PÚBLICO EN GENERAL">
-      <option value="PUNTO DE VENTA">
-      <option value="PUNTO CARDINAL">
-      <option value="RAFAEL SOTO">
-      <option value="RAMONA DANIEL VARGAS">
-      <option value="RAMSES SOLANO">
-      <option value="R. CALERI">
-      <option value="RENE TARRAGONA">
-      <option value="RESTAURANTE EL MARCOS">
-      <option value="RESTAURANT LA FAMILIA">
-      <option value="REYES ORTEGA">
-      <option value="RIGOBERTO PALAFOX">
-      <option value="RINCÓN DE FRIDA">
-      <option value="ROBERTO MORALES">
-      <option value="ROCÍO VILLA BONITA">
-      <option value="ROCÍO RESENDIZ">
-      <option value="RODOLFO CORBALA">
-      <option value="ROGER SEMPRA">
-      <option value="ROSA AMALIA">
-      <option value="ROSENDO PULIDO">
-      <option value="ross">
-      <option value="ROSSY FLORES">
-      <option value="ROXANA ALVAREZ">
-      <option value="RUBÉN SAAVEDRA">
-      <option value="RUBÉN NORIEGA">
-      <option value="RUBENS">
-      <option value="SAGRARIO VALENZUELA">
-      <option value="SAMUEL CASTILLO HOSPITAL MILITAR">
-      <option value="SANTIAGO ASTURIAS RESIDENCIAL">
-      <option value="SAYRI">
-      <option value="Scarleth Lopez">
-      <option value="SEBASTIÁN CASTELLANOS">
-      <option value="SEÑORA NARANJOS">
-      <option value="SERGIO VILLA LOURDES">
-      <option value="SERGIO MERCADO #2">
-      <option value="SERGIO LOYA">
-      <option value="SIDEGAN">
-      <option value="SOLUCIONES ORTOPEDICAS">
-      <option value="SONORA STEAK">
-      <option value="SUPER CARNICERIA JBE">
-      <option value="TANIA GARCÍA">
-      <option value="TANIA MEDINA">
-      <option value="TANIA CASTILLO">
-      <option value="TOMÁS LOPEZ">
-      <option value="TOÑITO ALTURA">
-      <option value="TOÑO MIZQUEZ">
-      <option value="TRIBUNAL DE JUSTICIA ADMINISTRATIVA">
-      <option value="UBER EATS">
-      <option value="VALENTINA LOPEZ">
-      <option value="VANESSA ARTEAGA">
-      <option value="VERÓNICA FERNANDEZ">
-      <option value="VICTOR PORCHAS">
-      <option value="VICTOR FELIX">
-      <option value="VICTOR">
-      <option value="VIOLETA">
-      <option value="VIOLETA DE FELIX">
-      <option value="VOLKSWAGEN RIO">
-      <option value="WAFF WAFF">
-      <option value="XIMENA DE ACHA">
-      <option value="YAMILET ROMERO">
-      <option value="YARELI KIOSCO COLOSIO">
-      <option value="YESICA BELTRAN">
-      <option value="YESSENIA IBARRA">
-      <option value="YOLANDA GUTIERREZ">
-      <option value="YOLI">
-      <option value="YONQUI CAFE">
-      <option value="ZAGROS CAFE">
-      <option value="ZALECK MILLAN">
-      <option value="ZALEIK MILLAN">
-      <option value="ZINNIA MIZQUEZ">
-    </datalist>
-
-    <!-- Lista autocompletable de Productos -->
-    <datalist id="lista-productos">
-      <option value="6PK ELECTROLIT MIX COMBO">
-      <option value="AGITADORES DE MADERA">
-      <option value="AGUA GASIFICADA DE SABOR KIRKLAND 355 ML">
-      <option value="AGUA MINERAL CANADA DRY 235 ML">
-      <option value="AGUA MINERAL PEÑAFIEL 235 ML">
-      <option value="AGUA NATURALE KIRKLAND 500 ML">
-      <option value="AGUA PURIFICADA 355 ML">
-      <option value="ALFAJORES">
-      <option value="ALMENDRAS MEMBERS MARK">
-      <option value="AMERICANO DEL DIA (12 OZ) CALIENTE">
-      <option value="AMERICANO DEL DIA (16 OZ) CALIENTE">
-      <option value="AMERICANO ESPRESSO (12 OZ) CALIENTE">
-      <option value="AMERICANO ESPRESSO (16 OZ) EN LAS ROCAS">
-      <option value="AMERICANO TONICO (16 OZ) EN LAS ROCAS">
-      <option value="AZUCAR (1 KG)">
-      <option value="AZUCAR REFINADA EN SOBRES (1,000 PZ)">
-      <option value="AZUCAR ZULKA 10 KG">
-      <option value="BARRA DE CHISPAS DE CHOCOLATE KIRKLAND">
-      <option value="BARRAS NATURE VALLEY">
-      <option value="BOLSA DE CAFE (180 GR)">
-      <option value="BOLSA DE CAFE COSTERA">
-      <option value="BOLSA DE FRUTOS SECOS">
-      <option value="BOTIQUIN ENFERMERIA">
-      <option value="BROWNIES (ANGEL'S)">
-      <option value="CACAHUATE ENCHILADOS MEMBERS MARK">
-      <option value="CACAHUATE JAPONES MEMBERS MARK">
-      <option value="CACAHUATE SALADITOS DE LA ROSA">
-      <option value="CAFE A GRANEL">
-      <option value="CAFE MOLIDO (PRUEBA)">
-      <option value="CAFE VERACRUZ LA PARROQUIA 500 GR">
-      <option value="CAFETERA 45 TAZAS HAMILTON BEACH">
-      <option value="CAFETERA CUISINART MOLINO INTEGRADO 12 TAZAS">
-      <option value="CAFETERA HAMILTON BEACH (14 TAZAS)">
-      <option value="CAFETERA INSUMOS">
-      <option value="CAFETERA KOBLENZ (15 TAZAS)">
-      <option value="CAFETERA OSTER (12 TAZAS)">
-      <option value="Capuchino Regular (16 oz) Caliente">
-      <option value="CAPUCHINO REGULAR (12 OZ) CALIENTE">
-      <option value="Capuchino Saborizado (12 oz) Caliente">
-      <option value="Capuchino Saborizado (16 oz) Caliente">
-      <option value="Carnation 930 ml">
-      <option value="Chai Latte (12 oz) Caliente">
-      <option value="Chai Latte (16 oz) Caliente">
-      <option value="Chai Latte (16 oz) En Rocas">
-      <option value="CHAMOY NAVOLATO">
-      <option value="CHAROLA TERMICA 7C REYMA CON 500 PZAS">
-      <option value="CHD - 1,000 CAFE TOSTADO">
-      <option value="CHD - 2,500 CAFE TOSTADO">
-      <option value="Chd - 250 Cafe Tostado">
-      <option value="Chd - 500 Cafe Tostado">
-      <option value="Chicharron de chile serrano 140 gr">
-      <option value="Chocolate (16 Oz) En Rocas">
-      <option value="Chocolate Caliente (12 oz) Caliente">
-      <option value="Chocolate Caliente (16 oz) Caliente">
-      <option value="Chr - 1,000 Cafe Tostado">
-      <option value="Chr - 2,500 Cafe Tostado">
-      <option value="Chr - 250 Cafe Tostado">
-      <option value="Chr - 500 Cafe Tostado">
-      <option value="Cintillo termico para vaso">
-      <option value="Coffee Break para 30 Personas">
-      <option value="Coffee Mate Original">
-      <option value="Coffee Mate Vainilla">
-      <option value="COOLER SYMPHONY 12 LT">
-      <option value="cuchara caja 280 pz">
-      <option value="cup cake chocolate">
-      <option value="Dirty Chai Latte (12 oz) Caliente">
-      <option value="Dirty Chai Latte (16 oz) Caliente">
-      <option value="Dirty Chai Latte (16 oz) En Rocas">
-      <option value="dispensador de agua mirage">
-      <option value="Dispensador de agua whirlpool gris">
-      <option value="Empanada de Cajeta">
-      <option value="Empanaditas 3 pza">
-      <option value="Entrega">
-      <option value="Envio sencillo">
-      <option value="FRAPPE">
-      <option value="galleta chispas fresa/chocolate">
-      <option value="Galleta Costco">
-      <option value="Galleta de Nuez">
-      <option value="galleta red velvet/oreo">
-      <option value="Galletas Gamesa Surtido Rico">
-      <option value="Galletas Pastisetas">
-      <option value="Galletas surtidas Members Mark">
-      <option value="Galletas Tartas Mix">
-      <option value="Galletas Tartas Paquetin c/2">
-      <option value="Galletitas mantequilla">
-      <option value="Helado Doble">
-      <option value="Helado Doble (Especial)">
-      <option value="Helado Sencillo">
-      <option value="Helado Sencillo (Especial)">
-      <option value="Hielera">
-      <option value="Hielo en cubos">
-      <option value="hisense frigobar 4.2">
-      <option value="Jarra de Cristal (1.5 L)">
-      <option value="JUGO JUMEX LATA 355 ML">
-      <option value="Latte (12 oz) Caliente">
-      <option value="Latte (16 oz) Caliente">
-      <option value="Latte (16 oz) En Rocas">
-      <option value="Latte Saborizado (16 oz) En Rocas">
-      <option value="Mesa 66 x 46 cm">
-      <option value="Mesa resina">
-      <option value="mezcla de frutos enchilados">
-      <option value="Mix Nueces">
-      <option value="Moka Latte (12 oz) Caliente">
-      <option value="Moka Latte (16 oz) Caliente">
-      <option value="Moka Latte (16 oz) En Rocas">
-      <option value="Molino de Cafe">
-      <option value="Oar - 1,000 Cafe Tostado">
-      <option value="Oar - 250 Cafe Tostado">
-      <option value="Oar - 500 Cafe Tostado">
-      <option value="Paleta Cookies & Cream">
-      <option value="Paleta de Crema">
-      <option value="Paleta de Fruta">
-      <option value="Paleta de Yogurt">
-      <option value="Paleta Nora Chocolate-Cacahuate">
-      <option value="Paleta Nora Vainilla-Choco">
-      <option value="Paleta Riccubierta">
-      <option value="Paquete Cafetera e Insumos (300 personas)">
-      <option value="Pastel Zanahoria">
-      <option value="Plato Cuadrado de Porcelana">
-      <option value="Plato papel 240 pz">
-      <option value="plato pastelero dixie 300 pz">
-      <option value="Prensa Francesa (1,000 ml)">
-      <option value="Prensa Francesa (600 ml)">
-      <option value="Prensa Francesa 800 ml">
-      <option value="Refresco Coca-Cola Light 235 ml">
-      <option value="Refresco Coca-Cola Regular 235 ml">
-      <option value="Refresco Coca-Cola Sin Azucar 235 ml">
-      <option value="Refresco (sabores) 235 ml">
-      <option value="Refrigerador 4.4 magic chef">
-      <option value="Renta de Cafetera (45 tazas por dia)">
-      <option value="Salsa de chile habanero asado al carbon 180 ml">
-      <option value="Salsa de chile habanero asado cremosa 180 ml">
-      <option value="Salsa de chile habanero cocido 180 ml">
-      <option value="Salsa macha gourmet 180 gr">
-      <option value="Salsa negra con chile chiltepin">
-      <option value="Sandwich de Vainilla">
-      <option value="Sandwich Mini Bite">
-      <option value="servilleta delsey">
-      <option value="Servilleta Delsey 9 x 100pz">
-      <option value="Shot de Espresso Caliente">
-      <option value="Shot DOBLE de Sabor (Vainilla, Caramelo, Avellana)">
-      <option value="Snack Mix">
-      <option value="SNICKERS8PACK">
-      <option value="Splenda caja sobres">
-      <option value="Sustituto de crema 2PK 1.4 kg">
-      <option value="Sustituto de Crema Marino (1,000 sobres)">
-      <option value="Sweet Rolls">
-      <option value="tajin">
-      <option value="Taza Cuadrada de Porcelana">
-      <option value="Te de manzanilla members mark">
-      <option value="Te para infusion Members Mark Varios">
-      <option value="Te verde C/100 sobres Members Mark">
-      <option value="Tenedor caja 280 pz">
-      <option value="Tenedores caja 1000 pzas">
-      <option value="Tira de vaso papel 10 oz">
-      <option value="Tisana (12 oz) Caliente">
-      <option value="Tisana (16 oz) Caliente">
-      <option value="Tisana (16 oz) En Rocas">
-      <option value="VASO DE VIDRIO (445 ML)">
-      <option value="VASO PAPEL BLANCO 10 OZ CAJA CON 1000 PZAS">
-      <option value="VASO TERMICO NO 10 REYMA CON 1000 PZAS">
-      <option value="Ver - Gourmet - 1,000 Cafe Tostado">
-      <option value="Ver - Gourmet - 250 Cafe Tostado">
-      <option value="Ver - Gourmet - 500 Cafe Tostado">
-      <option value="Ver - Mezcla Ame - 1,000 Cafe Tostado">
-    </datalist>
-
-    <!-- Tabla de Productos -->
-    <table class="items-table" id="tablaProductos">
-      <thead>
-        <tr>
-          <th style="width: 42%;">Descripción</th>
-          <th style="width: 12%;">Cantidad</th>
-          <th style="width: 15%;">P.U.</th>
-          <th style="width: 11%;">IVA</th>
-          <th style="width: 15%;">Importe</th>
-          <th style="width: 5%;" class="no-print"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Se insertan filas dinámicamente -->
-      </tbody>
-    </table>
-
-    <div class="no-print" style="margin-top: 10px;">
-      <button class="btn" onclick="agregarFila()">+ Agregar Producto</button>
-    </div>
-
-    <!-- Observaciones y Totales -->
-    <div class="totals-container">
-      <div class="obs-box">
-        <h5>Observaciones / Instrucciones de pago:</h5>
-        <textarea id="obsInput" placeholder="Escribe notas o términos de pago..."></textarea>
-        <span class="print-value" id="printObs"></span>
-      </div>
-      <table class="totals-table">
-        <tr>
-          <td>Subtotal</td>
-          <td id="subtotalGral">$ 0.00</td>
-        </tr>
-        <tr>
-          <td>IVA</td>
-          <td id="ivaGral">$ 0.00</td>
-        </tr>
-        <tr>
-          <td>Envío</td>
-          <td>$ -</td>
-        </tr>
-        <tr>
-          <td>Total</td>
-          <td id="totalGral" style="font-weight: bold; font-size: 15px;">$ 0.00</td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- Barra Verde Pie de Página -->
-    <div class="footer-bar"></div>
-
-  </div>
-</div>
-
-<script>
-  window.onload = function() {
-    // Establecer fecha de hoy por defecto
-    document.getElementById('fechaInput').valueAsDate = new Date();
-    agregarFila();
-  };
-
-  // Función aux para formatear números con comas y 2 decimales
-  function formatearMoneda(monto) {
-    return monto.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  function agregarFila() {
-    const tbody = document.querySelector('#tablaProductos tbody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>
-        <input type="text" list="lista-productos" class="prod-input" placeholder="Escribe un producto..." oninput="alCambiarProducto(this)">
-        <span class="print-value"></span>
-        <span class="last-price-hint"></span>
-      </td>
-      <td>
-        <input type="number" class="cant-input" value="1" min="1" oninput="calcularFila(this)">
-        <span class="print-value" style="text-align: center;"></span>
-      </td>
-      <td>
-        <input type="number" class="precio-input" step="0.01" placeholder="0.00" oninput="alCambiarPrecio(this)">
-        <span class="print-value" style="text-align: right;"></span>
-      </td>
-      <td>
-        <select class="iva-select" onchange="calcularFila(this)">
-          <option value="0.16">16%</option>
-          <option value="0.00">0%</option>
-        </select>
-        <span class="print-value" style="text-align: center;"></span>
-      </td>
-      <td style="text-align: right; padding-right: 8px;" class="importe-td">$ 0.00</td>
-      <td class="no-print" style="text-align: center;">
-        <button class="btn-remove" onclick="eliminarFila(this)">✕</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  }
-
-  function eliminarFila(btn) {
-    const tbody = document.querySelector('#tablaProductos tbody');
-    if (tbody.rows.length > 1) {
-      btn.closest('tr').remove();
-      actualizarTotalesGenerales();
-    } else {
-      alert("La tabla debe contener al menos un producto.");
-    }
-  }
-
-  function alCambiarProducto(input) {
-    const row = input.closest('tr');
-    const prodName = input.value.trim();
-    const hintSpan = row.querySelector('.last-price-hint');
-    const precioInput = row.querySelector('.precio-input');
-
-    if (prodName) {
-      const ultimoPrecio = localStorage.getItem('precio_' + prodName);
-      if (ultimoPrecio !== null) {
-        const valNum = parseFloat(ultimoPrecio);
-        hintSpan.textContent = `Último precio: $${formatearMoneda(valNum)}`;
-        precioInput.value = valNum;
-        calcularFila(precioInput);
-      } else {
-        hintSpan.textContent = 'Sin historial';
-      }
-    } else {
-      hintSpan.textContent = '';
-    }
-  }
-
-  function alCambiarPrecio(input) {
-    const row = input.closest('tr');
-    const prodName = row.querySelector('.prod-input').value.trim();
-    const precioVal = parseFloat(input.value);
-
-    if (prodName && !isNaN(precioVal)) {
-      localStorage.setItem('precio_' + prodName, precioVal.toString());
-      row.querySelector('.last-price-hint').textContent = `Último precio: $${formatearMoneda(precioVal)}`;
-    }
-    calcularFila(input);
-  }
-
-  function calcularFila(element) {
-    const row = element.closest('tr');
-    const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
-    const pu = parseFloat(row.querySelector('.precio-input').value) || 0;
-    
-    const importe = cant * pu;
-    row.querySelector('.importe-td').textContent = `$ ${formatearMoneda(importe)}`;
-
-    actualizarTotalesGenerales();
-  }
-
-  function actualizarTotalesGenerales() {
-    let subtotal = 0;
-    let totalIva = 0;
-
-    const filas = document.querySelectorAll('#tablaProductos tbody tr');
-    filas.forEach(row => {
-      const cant = parseFloat(row.querySelector('.cant-input').value) || 0;
-      const pu = parseFloat(row.querySelector('.precio-input').value) || 0;
-      const tasaIva = parseFloat(row.querySelector('.iva-select').value) || 0;
-
-      const imp = cant * pu;
-      subtotal += imp;
-      totalIva += imp * tasaIva;
-    });
-
-    const total = subtotal + totalIva;
-
-    document.getElementById('subtotalGral').textContent = `$ ${formatearMoneda(subtotal)}`;
-    document.getElementById('ivaGral').textContent = `$ ${formatearMoneda(totalIva)}`;
-    document.getElementById('totalGral').textContent = `$ ${formatearMoneda(total)}`;
-  }
-
-  function nuevoFormulario() {
-    if (confirm("¿Deseas borrar los datos actuales para iniciar una nueva cotización?")) {
-      document.getElementById('refInput').value = '';
-      document.getElementById('clienteNombre').value = '';
-      document.getElementById('clienteRfc').value = '';
-      document.getElementById('clienteTel').value = '';
-      document.getElementById('clienteDir').value = '';
-      document.getElementById('clienteEmail').value = '';
-      document.getElementById('obsInput').value = '';
-      
-      const tbody = document.querySelector('#tablaProductos tbody');
-      tbody.innerHTML = '';
-      agregarFila();
-      actualizarTotalesGenerales();
-    }
-  }
-
-  function prepararVistaPrint() {
-    // Preparar campos de encabezado y cliente para impresión/PDF
-    document.getElementById('printFecha').textContent = document.getElementById('fechaInput').value || '-';
-    document.getElementById('printRef').textContent = document.getElementById('refInput').value || '-';
-    
-    document.getElementById('printClienteNombre').textContent = document.getElementById('clienteNombre').value || '';
-    document.getElementById('printClienteRfc').textContent = document.getElementById('clienteRfc').value ? 'RFC: ' + document.getElementById('clienteRfc').value : '';
-    document.getElementById('printClienteTel').textContent = document.getElementById('clienteTel').value ? 'Tel: ' + document.getElementById('clienteTel').value : '';
-    document.getElementById('printClienteDir').textContent = document.getElementById('clienteDir').value || '';
-    document.getElementById('printClienteEmail').textContent = document.getElementById('clienteEmail').value ? 'Email: ' + document.getElementById('clienteEmail').value : '';
-    
-    document.getElementById('printObs').textContent = document.getElementById('obsInput').value || '';
-
-    // Preparar filas de tabla
-    const filas = document.querySelectorAll('#tablaProductos tbody tr');
-    filas.forEach(row => {
-      const prodVal = row.querySelector('.prod-input').value;
-      const cantVal = row.querySelector('.cant-input').value;
-      const puVal = parseFloat(row.querySelector('.precio-input').value) || 0;
-      const ivaSelect = row.querySelector('.iva-select');
-      const ivaVal = ivaSelect.options[ivaSelect.selectedIndex].text;
-
-      const printSpans = row.querySelectorAll('.print-value');
-      printSpans[0].textContent = prodVal;
-      printSpans[1].textContent = cantVal;
-      printSpans[2].textContent = `$ ${formatearMoneda(puVal)}`;
-      printSpans[3].textContent = ivaVal;
-    });
-  }
-
-  function imprimirDocumento() {
-    prepararVistaPrint();
-    window.print();
-  }
-
-  function descargarPDF() {
-    prepararVistaPrint();
-
-    document.body.classList.add('printing-pdf');
-
-    const elemento = document.getElementById('cotizacionDoc');
-    const opciones = {
-      margin:        [8, 8, 12, 8],
-      filename:      `Cotizacion_${document.getElementById('refInput').value || 'documento'}.pdf`,
-      image:         { type: 'jpeg', quality: 0.98 },
-      html2canvas:   { scale: 2, useCORS: true },
-      jsPDF:         { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opciones).from(elemento).save().then(() => {
-      document.body.classList.remove('printing-pdf');
-    }).catch(err => {
-      console.error(err);
-      document.body.classList.remove('printing-pdf');
-    });
-  }
-</script>
 
 </body>
 </html>
