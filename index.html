@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horario Escolar S2A</title>
+    <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             box-sizing: border-box;
@@ -17,12 +20,51 @@
             background-color: #fcf0f4;
             color: #4a3e43;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
         }
 
+        /* Top Navigation Bar */
+        .nav-bar {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #f7a8be 0%, #e06287 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(224, 98, 135, 0.3);
+            display: inline-flex;
+            items-center: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 98, 135, 0.45);
+            background: linear-gradient(135deg, #f8b3c6 0%, #d8547b 100%);
+        }
+
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Main Container */
         .container {
             background-color: #ffffff;
             width: 100%;
@@ -59,7 +101,7 @@
             border: 2px solid #f2b6c6;
         }
 
-        /* Ancho fijo de columnas */
+        /* Column widths */
         col.col-hora {
             width: 15%;
         }
@@ -137,10 +179,22 @@
             .hora {
                 font-size: 0.7rem;
             }
+            .menu-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="nav-bar">
+        <!-- Links directly to your password manager or opens it -->
+        <a href="#passwords" onclick="alert('Algebraix\nUsuario: FMORALES2\nContraseña: Frida2026')" class="menu-btn" title="Ver Contraseñas">
+            <i class="fa-solid fa-key"></i> Mis Contraseñas
+        </a>
+    </nav>
 
     <div class="container">
         <header>
