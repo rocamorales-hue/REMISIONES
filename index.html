@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Financiera - Estilo FIDESON</title>
+  <title>Calculadora Financiera - FIDESON</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -12,6 +12,10 @@
         extend: {
           colors: {
             fideson: {
+              burgundy: '#800020',
+              burgundyDark: '#5c0017',
+              gold: '#D4AF37',
+              goldLight: '#fdfbf0',
               green: '#00875a',
               greenDark: '#006644',
               greenLight: '#e6f4ea',
@@ -25,15 +29,15 @@
     }
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f3f4f6;
     }
     @media print {
       body {
-        background-color: #ffffff;
-        padding: 0;
+        background-color: #ffffff !important;
+        padding: 0 !important;
       }
       .no-print {
         display: none !important;
@@ -45,312 +49,375 @@
         box-shadow: none !important;
         border: 1px solid #ccc !important;
       }
+      .page-break {
+        page-break-before: always;
+      }
+    }
+    .badge-vencido {
+      background-color: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
     }
   </style>
 </head>
 <body class="p-2 sm:p-6 min-h-screen text-gray-800">
 
-  <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden card-shadow">
+  <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden card-shadow border border-gray-100">
     
-    <!-- Institutional Header -->
     <div class="bg-white border-b border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <div class="bg-fideson-green text-white font-extrabold text-2xl px-3 py-1 rounded-lg tracking-wider">
+      <div class="flex items-center gap-4">
+        <div class="bg-fideson-burgundy text-white font-extrabold text-2xl px-4 py-2 rounded-xl tracking-wider shadow-md flex items-center justify-center">
           FIDESON
         </div>
         <div>
-          <h1 class="font-bold text-lg text-gray-800 leading-tight">FINANCIERA PARA EL DESARROLLO ECONÓMICO DE SONORA</h1>
-          <p class="text-xs text-gray-500">Sistema de Cálculo y Simulación de Crédito</p>
+          <h1 class="font-extrabold text-lg sm:text-xl text-gray-900 tracking-tight">FINANCIERA PARA EL DESARROLLO ECONÓMICO DE SONORA</h1>
+          <p class="text-xs text-fideson-gold font-semibold uppercase tracking-wider">Gobierno del Estado de Sonora &bull; Sistema de Simulación de Crédito</p>
         </div>
       </div>
       <div class="no-print flex items-center gap-2">
-        <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+        <button onclick="window.print()" class="bg-fideson-burgundy hover:bg-fideson-burgundyDark text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center gap-2">
           <i class="fas fa-print"></i> Imprimir Estado
         </button>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="no-print flex border-b border-gray-200 bg-gray-50 text-xs sm:text-sm font-semibold">
-      <button id="tab-btn-fideson" onclick="switchTab('fideson')" class="flex-1 py-3 sm:py-4 px-2 sm:px-4 text-center border-b-2 border-fideson-green text-fideson-green font-bold transition flex items-center justify-center gap-2">
-        <i class="fas fa-calculator"></i> Moratorios FIDESON
+    <div class="no-print flex border-b border-gray-200 bg-gray-50 text-xs sm:text-sm font-semibold overflow-x-auto">
+      <button id="tab-btn-fideson" onclick="switchTab('fideson')" class="flex-1 py-3.5 px-4 text-center border-b-2 border-fideson-burgundy text-fideson-burgundy font-bold transition flex items-center justify-center gap-2 whitespace-nowrap">
+        <i class="fas fa-file-invoice-dollar"></i> Aplicación de Pagos y Estado de Cuenta FIDESON
       </button>
-      <button id="tab-btn-simple" onclick="switchTab('simple')" class="flex-1 py-3 sm:py-4 px-2 sm:px-4 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition flex items-center justify-center gap-2">
+      <button id="tab-btn-simple" onclick="switchTab('simple')" class="flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition flex items-center justify-center gap-2 whitespace-nowrap">
         <i class="fas fa-percent"></i> Interés Simple
       </button>
-      <button id="tab-btn-compuesto" onclick="switchTab('compuesto')" class="flex-1 py-3 sm:py-4 px-2 sm:px-4 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition flex items-center justify-center gap-2">
+      <button id="tab-btn-compuesto" onclick="switchTab('compuesto')" class="flex-1 py-3.5 px-4 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition flex items-center justify-center gap-2 whitespace-nowrap">
         <i class="fas fa-chart-line"></i> Interés Compuesto
       </button>
     </div>
 
     <div class="p-4 sm:p-8">
 
+      <!-- ==================== TAB 1: FIDESON ENGINE ==================== -->
       <div id="tab-fideson" class="space-y-6">
         
-        <!-- Header Info Bar -->
-        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs sm:text-sm">
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm">
           <div>
-            <label class="block text-gray-500 font-medium">Acreditado</label>
-            <input type="text" id="fid-acreditado" value="GABRIEL ANGEL BAILON SALLARD" class="w-full bg-white border border-gray-300 rounded px-2 py-1 font-medium text-gray-800 focus:outline-none focus:border-fideson-green">
+            <label class="block text-gray-500 font-medium">Acreditado / Titular</label>
+            <input type="text" id="fid-acreditado" value="GABRIEL ANGEL BAILON SALLARD" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 font-semibold text-gray-800 focus:outline-none focus:border-fideson-burgundy">
           </div>
           <div>
             <label class="block text-gray-500 font-medium">No. Crédito / Expediente</label>
-            <input type="text" id="fid-credito" value="21185" class="w-full bg-white border border-gray-300 rounded px-2 py-1 font-medium text-gray-800 focus:outline-none focus:border-fideson-green">
+            <input type="text" id="fid-credito" value="21185" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 font-semibold text-gray-800 focus:outline-none focus:border-fideson-burgundy">
           </div>
           <div>
             <label class="block text-gray-500 font-medium">Programa de Crédito</label>
-            <input type="text" id="fid-programa" value="EMPLEATE - INDIVIDUAL" class="w-full bg-white border border-gray-300 rounded px-2 py-1 font-medium text-gray-800 focus:outline-none focus:border-fideson-green">
+            <input type="text" id="fid-programa" value="EMPLEATE - INDIVIDUAL" class="w-full bg-white border border-gray-300 rounded px-2.5 py-1.5 font-semibold text-gray-800 focus:outline-none focus:border-fideson-burgundy">
           </div>
           <div>
-            <label class="block text-gray-500 font-medium">Estado del Crédito</label>
-            <span class="inline-block mt-1 font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">ACTIVO (VENCIDO)</span>
+            <label class="block text-gray-500 font-medium">Estatus de Crédito</label>
+            <span class="inline-block mt-1 text-xs font-bold badge-vencido px-2.5 py-1 rounded-md">
+              <i class="fas fa-exclamation-circle mr-1"></i> ACTIVO (VENCIDO)
+            </span>
           </div>
         </div>
 
-        <!-- Inputs Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-3">
-            <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-2">
-              <i class="far fa-calendar-alt text-fideson-green"></i> Fechas del Cálculo
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Fechas -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 space-y-4 shadow-sm">
+            <h3 class="font-bold text-fideson-burgundy text-sm border-b pb-2 flex items-center justify-between">
+              <span><i class="far fa-calendar-alt mr-2 text-fideson-gold"></i> Fechas del Cálculo</span>
+              <span class="text-xs bg-gray-100 text-gray-600 font-normal px-2 py-0.5 rounded">Paso 1</span>
             </h3>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Fecha Vencimiento Amortización</label>
-              <input type="date" id="fid-fecha-venc" value="2026-09-17" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Fecha Vencimiento Amortización</label>
+              <input type="date" id="fid-fecha-venc" value="2026-09-17" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Fecha de Corte / Cálculo</label>
-              <input type="date" id="fid-fecha-corte" value="2026-09-23" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Fecha Corte / Aplicación Pago</label>
+              <input type="date" id="fid-fecha-corte" value="2026-09-23" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none">
             </div>
-            <div class="pt-1 text-xs text-gray-500 flex justify-between">
-              <span>Días de Atraso:</span>
-              <span id="fid-dias-atraso-lbl" class="font-bold text-red-600">6 días</span>
+            <div class="pt-2 border-t text-xs text-gray-600 flex justify-between items-center">
+              <span class="font-medium">Días de Atraso Calculados:</span>
+              <span id="fid-dias-atraso-lbl" class="font-extrabold text-sm text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">6 días</span>
             </div>
           </div>
 
-          <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-3">
-            <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-2">
-              <i class="fas fa-dollar-sign text-fideson-green"></i> Conceptos Vencidos
+          <!-- Conceptos Vencidos -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 space-y-4 shadow-sm">
+            <h3 class="font-bold text-fideson-burgundy text-sm border-b pb-2 flex items-center justify-between">
+              <span><i class="fas fa-coins mr-2 text-fideson-gold"></i> Conceptos Vencidos</span>
+              <span class="text-xs bg-gray-100 text-gray-600 font-normal px-2 py-0.5 rounded">Paso 2</span>
             </h3>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Capital Vencido ($)</label>
-              <input type="number" id="fid-capital" value="2083" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Capital Vencido de la Cuota ($)</label>
+              <input type="number" id="fid-capital" value="2083" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Interés Ordinario Vencido ($)</label>
-              <input type="number" id="fid-ordinario" value="200" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Interés Ordinario Vencido ($)</label>
+              <input type="number" id="fid-ordinario" value="200" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-700 mb-1">Saldo Insoluto Total ($)</label>
+              <input type="number" id="fid-insoluto" value="22917" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none text-gray-600">
             </div>
           </div>
 
-          <div class="bg-white p-4 rounded-xl border border-gray-200 space-y-3">
-            <h3 class="font-bold text-gray-700 text-sm border-b pb-2 flex items-center gap-2">
-              <i class="fas fa-percentage text-fideson-green"></i> Parámetros de Tasa
+          <!-- Tasas & Reglas -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 space-y-4 shadow-sm">
+            <h3 class="font-bold text-fideson-burgundy text-sm border-b pb-2 flex items-center justify-between">
+              <span><i class="fas fa-sliders-h mr-2 text-fideson-gold"></i> Parámetros Institucionales</span>
+              <span class="text-xs bg-gray-100 text-gray-600 font-normal px-2 py-0.5 rounded">Paso 3</span>
             </h3>
-            <div>
-              <label class="block text-xs font-semibold text-gray-600 mb-1">Tasa Moratoria Anual (%)</label>
-              <input type="number" id="fid-tasa-mora" value="24" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Tasa Mora (%)</label>
+                <input type="number" id="fid-tasa-mora" value="24" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Tasa Ordinaria (%)</label>
+                <input type="number" id="fid-tasa-ord" value="12" oninput="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none text-gray-600">
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Base Días</label>
-                <select id="fid-base-dias" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fideson-green focus:outline-none">
-                  <option value="360" selected>360 (Comercial)</option>
-                  <option value="365">365 (Natural)</option>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Base Días</label>
+                <select id="fid-base-dias" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+                  <option value="360" selected>360 (Comercial FIDESON)</option>
+                  <option value="365">365 (Año Natural)</option>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Aplica IVA</label>
-                <select id="fid-aplica-iva" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fideson-green focus:outline-none">
-                  <option value="0" selected>No (0%)</option>
-                  <option value="16">Sí (16%)</option>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Aplica IVA Mora</label>
+                <select id="fid-aplica-iva" onchange="calcularFideson()" class="w-full border border-gray-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+                  <option value="0" selected>No (0% Exento)</option>
+                  <option value="16">Sí (16% IVA)</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Resumen de Saldos estilo FIDESON -->
         <div>
-          <h3 class="font-bold text-gray-800 text-base mb-3 flex items-center gap-2">
-            <i class="fas fa-receipt text-fideson-green"></i> Resumen del Estado de Cuenta
+          <h3 class="font-bold text-gray-900 text-base mb-3 flex items-center gap-2">
+            <i class="fas fa-file-invoice text-fideson-burgundy"></i> Resumen del Estado de Cuenta a la Fecha
           </h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl text-center">
+            <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-center shadow-xs">
               <p class="text-xs text-gray-500 uppercase font-semibold">Capital Vencido</p>
-              <p id="card-capital" class="text-lg font-bold text-gray-800 mt-1">$2,083.00</p>
+              <p id="card-capital" class="text-lg sm:text-xl font-bold text-gray-800 mt-1">$2,083.00</p>
             </div>
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl text-center">
+            <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-center shadow-xs">
               <p class="text-xs text-gray-500 uppercase font-semibold">Interés Ordinario</p>
-              <p id="card-ordinario" class="text-lg font-bold text-gray-800 mt-1">$200.00</p>
+              <p id="card-ordinario" class="text-lg sm:text-xl font-bold text-gray-800 mt-1">$200.00</p>
             </div>
-            <div class="bg-gray-50 border border-gray-200 p-3 rounded-xl text-center">
+            <div class="bg-gray-50 border border-gray-200 p-3.5 rounded-xl text-center shadow-xs">
               <p class="text-xs text-gray-500 uppercase font-semibold">Interés Moratorio</p>
-              <p id="card-moratorio" class="text-lg font-bold text-fideson-green mt-1">$8.34</p>
+              <p id="card-moratorio" class="text-lg sm:text-xl font-bold text-fideson-burgundy mt-1">$8.34</p>
             </div>
-            <div class="bg-fideson-greenLight border border-green-200 p-3 rounded-xl text-center">
-              <p class="text-xs text-fideson-greenDark uppercase font-semibold">Total Pendiente Vencido</p>
-              <p id="card-total" class="text-xl font-extrabold text-fideson-greenDark mt-1">$2,291.34</p>
+            <div class="bg-fideson-burgundy text-white p-3.5 rounded-xl text-center shadow-md">
+              <p class="text-xs uppercase font-semibold opacity-90">Total Pendiente Vencido</p>
+              <p id="card-total" class="text-xl sm:text-2xl font-extrabold mt-1 text-fideson-gold">$2,291.34</p>
             </div>
           </div>
         </div>
 
-        <!-- Tabla Intereses por Amortización -->
         <div>
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide">
-              Intereses por Amortización (Desglose Diario FIDESON)
-            </h3>
-            <span class="text-xs text-gray-500">Cuota diaria redondeada: <strong id="lbl-cuota-diaria" class="text-gray-700">$1.39</strong> / día</span>
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
+            <div>
+              <h3 class="font-bold text-gray-900 text-sm uppercase tracking-wide flex items-center gap-2">
+                <i class="fas fa-list-ol text-fideson-burgundy"></i> Intereses por Amortización (Desglose Diario FIDESON)
+              </h3>
+              <p class="text-xs text-gray-500">Muestra el devengo diario de moratorios con redondeo institucional a dos decimales.</p>
+            </div>
+            <div class="bg-fideson-goldLight border border-fideson-gold/40 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-800">
+              Cuota Diaria Redondeada: <strong id="lbl-cuota-diaria" class="text-fideson-burgundy font-bold">$1.39</strong> / día
+            </div>
           </div>
+
           <div class="overflow-x-auto border border-gray-200 rounded-xl shadow-sm">
             <table class="w-full text-xs text-left">
-              <thead class="bg-gray-100 text-gray-700 font-semibold uppercase border-b border-gray-200">
+              <thead class="bg-gray-100 text-gray-700 font-bold uppercase border-b border-gray-200">
                 <tr>
-                  <th class="p-2.5">Mes</th>
-                  <th class="p-2.5">Año</th>
-                  <th class="p-2.5">Fecha Calculado</th>
-                  <th class="p-2.5">Tipo Interés</th>
-                  <th class="p-2.5 text-right">Importe Base</th>
-                  <th class="p-2.5 text-center">Tasa Cálculo</th>
-                  <th class="p-2.5 text-center">Días</th>
-                  <th class="p-2.5 text-right">Importe Calculado</th>
-                  <th class="p-2.5 text-right">Saldo Acumulado</th>
+                  <th class="p-3">Mes</th>
+                  <th class="p-3">Año</th>
+                  <th class="p-3">Fecha Calculado</th>
+                  <th class="p-3">Tipo Interés</th>
+                  <th class="p-3 text-right">Importe Base</th>
+                  <th class="p-3 text-center">Tasa Cálculo</th>
+                  <th class="p-3 text-center">Días</th>
+                  <th class="p-3 text-right">Importe Calculado</th>
+                  <th class="p-3 text-right">Saldo Acumulado</th>
                 </tr>
               </thead>
               <tbody id="fid-tabla-body" class="divide-y divide-gray-200 bg-white">
-                <!-- Javascript populated rows -->
+                <!-- Javascript dynamic rows -->
               </tbody>
             </table>
           </div>
         </div>
 
-      </div>
+        <div class="bg-gradient-to-br from-gray-50 to-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
+                <i class="fas fa-cash-register text-fideson-burgundy"></i> Simulador de Aplicación de Pago (Prelación Institucional)
+              </h3>
+              <p class="text-xs text-gray-500">Aplica un abono para simular cómo se distribuyen los fondos de acuerdo al reglamento oficial de FIDESON.</p>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <span class="text-xs font-semibold text-gray-700 whitespace-nowrap">Monto Depositado:</span>
+              <input type="number" id="fid-pago-ingresado" value="2291.34" oninput="simularAplicacionPago()" class="w-36 border border-gray-300 rounded-lg p-2 text-sm font-bold text-fideson-greenDark focus:ring-2 focus:ring-fideson-burgundy focus:outline-none">
+            </div>
+          </div>
 
-      <!-- TAB INTERÉS SIMPLE -->
-      <div id="tab-simple" class="hidden space-y-6">
-        <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Calculadora de Interés Simple</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Capital Inicial ($)</label>
-            <input type="number" id="simp-capital" value="50000" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs" id="prelacion-grid">
+            <!-- Dynamic payment waterfall cards -->
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Tasa Anual (%)</label>
-            <input type="number" id="simp-tasa" value="12" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Plazo (Meses)</label>
-            <input type="number" id="simp-meses" value="12" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+
+          <div id="pago-remanente-banner" class="text-xs p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium flex justify-between items-center">
+            <span><i class="fas fa-check-circle mr-1 text-emerald-600"></i> Estado del Pago:</span>
+            <span id="pago-remanente-txt" class="font-bold">Pago exacto cubre el 100% de la deuda vencida.</span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-          <div class="bg-gray-50 border p-4 rounded-xl text-center">
+      </div>
+
+      <!-- ==================== TAB 2: INTERÉS SIMPLE ==================== -->
+      <div id="tab-simple" class="hidden space-y-6">
+        <div class="border-b pb-3">
+          <h2 class="text-lg font-bold text-gray-900">Calculadora de Interés Simple</h2>
+          <p class="text-xs text-gray-500">Cálculo de intereses lineales sobre capital fijo durante un número de meses determinado.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Capital Inicial ($)</label>
+            <input type="number" id="simp-capital" value="50000" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Tasa de Interés Anual (%)</label>
+            <input type="number" id="simp-tasa" value="12" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Plazo (Meses)</label>
+            <input type="number" id="simp-meses" value="12" oninput="calcularSimple()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center">
             <span class="text-xs text-gray-500 uppercase font-semibold">Capital Original</span>
             <p id="simp-res-capital" class="text-xl font-bold text-gray-800 mt-1">$50,000.00</p>
           </div>
-          <div class="bg-gray-50 border p-4 rounded-xl text-center">
-            <span class="text-xs text-gray-500 uppercase font-semibold">Interés Generado</span>
-            <p id="simp-res-interes" class="text-xl font-bold text-fideson-green mt-1">$6,000.00</p>
+          <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center">
+            <span class="text-xs text-gray-500 uppercase font-semibold">Interés Total Generado</span>
+            <p id="simp-res-interes" class="text-xl font-bold text-fideson-burgundy mt-1">$6,000.00</p>
           </div>
-          <div class="bg-fideson-greenLight border border-green-200 p-4 rounded-xl text-center">
-            <span class="text-xs text-fideson-greenDark uppercase font-semibold">Monto Total a Pagar / Recibir</span>
-            <p id="simp-res-total" class="text-2xl font-extrabold text-fideson-greenDark mt-1">$56,000.00</p>
+          <div class="bg-fideson-burgundy text-white p-4 rounded-xl text-center shadow-md">
+            <span class="text-xs uppercase font-semibold text-fideson-gold">Monto Total a Liquidez</span>
+            <p id="simp-res-total" class="text-2xl font-extrabold mt-1 text-white">$56,000.00</p>
           </div>
         </div>
       </div>
 
-      <!-- TAB INTERÉS COMPUESTO -->
+      <!-- ==================== TAB 3: INTERÉS COMPUESTO ==================== -->
       <div id="tab-compuesto" class="hidden space-y-6">
-        <h2 class="text-lg font-bold text-gray-800 border-b pb-2">Calculadora de Interés Compuesto</h2>
+        <div class="border-b pb-3">
+          <h2 class="text-lg font-bold text-gray-900">Calculadora de Interés Compuesto</h2>
+          <p class="text-xs text-gray-500">Simulación de crecimiento de capital acumulado con rendimientos sobre intereses y aportaciones periódicas.</p>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Depósito Inicial ($)</label>
-            <input type="number" id="comp-inicial" value="10000" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Depósito Inicial ($)</label>
+            <input type="number" id="comp-inicial" value="10000" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Aportación Mensual ($)</label>
-            <input type="number" id="comp-aportacion" value="1000" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Aportación Mensual ($)</label>
+            <input type="number" id="comp-aportacion" value="1000" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Tasa Rendimiento Anual (%)</label>
-            <input type="number" id="comp-tasa" value="11" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Tasa Rendimiento Anual (%)</label>
+            <input type="number" id="comp-tasa" value="11" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Plazo (Años)</label>
-            <input type="number" id="comp-anos" value="3" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-fideson-green focus:outline-none">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Plazo (Años)</label>
+            <input type="number" id="comp-anos" value="3" oninput="calcularCompuesto()" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-fideson-burgundy focus:outline-none font-semibold">
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-          <div class="bg-gray-50 border p-4 rounded-xl text-center">
-            <span class="text-xs text-gray-500 uppercase font-semibold">Total Invertido</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center">
+            <span class="text-xs text-gray-500 uppercase font-semibold">Total Capital Invertido</span>
             <p id="comp-res-invertido" class="text-xl font-bold text-gray-800 mt-1">$46,000.00</p>
           </div>
-          <div class="bg-gray-50 border p-4 rounded-xl text-center">
-            <span class="text-xs text-gray-500 uppercase font-semibold">Intereses Ganados</span>
-            <p id="comp-res-interes" class="text-xl font-bold text-fideson-green mt-1">$8,520.12</p>
+          <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center">
+            <span class="text-xs text-gray-500 uppercase font-semibold">Intereses Acumulados</span>
+            <p id="comp-res-interes" class="text-xl font-bold text-fideson-burgundy mt-1">$8,520.12</p>
           </div>
-          <div class="bg-fideson-greenLight border border-green-200 p-4 rounded-xl text-center">
-            <span class="text-xs text-fideson-greenDark uppercase font-semibold">Saldo Final Estimado</span>
-            <p id="comp-res-total" class="text-2xl font-extrabold text-fideson-greenDark mt-1">$54,520.12</p>
+          <div class="bg-fideson-burgundy text-white p-4 rounded-xl text-center shadow-md">
+            <span class="text-xs uppercase font-semibold text-fideson-gold">Saldo Final Estimado</span>
+            <p id="comp-res-total" class="text-2xl font-extrabold mt-1 text-white">$54,520.12</p>
           </div>
         </div>
 
-        <!-- Proyección de crecimiento -->
-        <div class="overflow-x-auto border border-gray-200 rounded-xl max-h-60 overflow-y-auto">
-          <table class="w-full text-xs text-left">
-            <thead class="bg-gray-100 text-gray-700 font-semibold uppercase sticky top-0">
-              <tr>
-                <th class="p-2.5">Mes</th>
-                <th class="p-2.5 text-right">Aportado Acumulado</th>
-                <th class="p-2.5 text-right">Interés del Mes</th>
-                <th class="p-2.5 text-right">Saldo Final</th>
-              </tr>
-            </thead>
-            <tbody id="comp-tabla-body" class="divide-y divide-gray-200 bg-white">
-            </tbody>
-          </table>
+        <div>
+          <h3 class="font-bold text-gray-800 text-xs uppercase tracking-wide mb-2">Proyección Acumulada Mes a Mes</h3>
+          <div class="overflow-x-auto border border-gray-200 rounded-xl max-h-60 overflow-y-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-gray-100 text-gray-700 font-bold uppercase sticky top-0">
+                <tr>
+                  <th class="p-2.5">Mes</th>
+                  <th class="p-2.5 text-right">Aportado Acumulado</th>
+                  <th class="p-2.5 text-right">Interés del Mes</th>
+                  <th class="p-2.5 text-right">Saldo Final</th>
+                </tr>
+              </thead>
+              <tbody id="comp-tabla-body" class="divide-y divide-gray-200 bg-white">
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Footnote Footer -->
     <div class="bg-gray-50 border-t border-gray-200 p-4 text-center text-xs text-gray-500 leading-relaxed">
-      EL PRESENTE SIMULADOR REFLEJA LOS SALDOS Y CÁLCULOS APLICANDO LA LÓGICA DE DÍAS Y REDONDEO DIARIO INSTITUCIONAL.<br>
-      FIDESON - GOBIERNO DEL ESTADO DE SONORA.
+      <strong>FINANCIERA PARA EL DESARROLLO ECONÓMICO DE SONORA (FIDESON)</strong><br>
+      EL PRESENTE SIMULADOR REFLEJA LOS SALDOS Y CÁLCULOS APLICANDO LA LÓGICA DE DÍAS Y REDONDEO DIARIO INSTITUCIONAL CON BASE 360 DÍAS COMERCIALES.<br>
+      Centro de Gobierno, Edificio Sonora, Hermosillo, Sonora, México.
     </div>
 
   </div>
 
   <script>
-    // Formatter
+    // Currency Formatter MXN
     const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 
-    // Tab Switching
+    // Tab Switching Controller
     function switchTab(tab) {
       const tabs = ['fideson', 'simple', 'compuesto'];
       tabs.forEach(t => {
         document.getElementById(`tab-${t}`).classList.add('hidden');
         const btn = document.getElementById(`tab-btn-${t}`);
-        btn.classList.remove('border-fideson-green', 'text-fideson-green', 'font-bold');
+        btn.classList.remove('border-fideson-burgundy', 'text-fideson-burgundy', 'font-bold');
         btn.classList.add('border-transparent', 'text-gray-500');
       });
 
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
       const activeBtn = document.getElementById(`tab-btn-${tab}`);
-      activeBtn.classList.add('border-fideson-green', 'text-fideson-green', 'font-bold');
+      activeBtn.classList.add('border-fideson-burgundy', 'text-fideson-burgundy', 'font-bold');
       activeBtn.classList.remove('border-transparent', 'text-gray-500');
     }
 
-    // FIDESON Moratory Calculation
+    // FIDESON Moratory Core Calculation
     function calcularFideson() {
       const fechaVencStr = document.getElementById('fid-fecha-venc').value;
       const fechaCorteStr = document.getElementById('fid-fecha-corte').value;
 
       const capital = parseFloat(document.getElementById('fid-capital').value) || 0;
       const ordinario = parseFloat(document.getElementById('fid-ordinario').value) || 0;
+      const insoluto = parseFloat(document.getElementById('fid-insoluto').value) || 0;
       const tasaMoraAnual = parseFloat(document.getElementById('fid-tasa-mora').value) || 0;
+      const tasaOrdAnual = parseFloat(document.getElementById('fid-tasa-ord').value) || 0;
       const baseDias = parseFloat(document.getElementById('fid-base-dias').value) || 360;
       const aplicaIva = parseFloat(document.getElementById('fid-aplica-iva').value) || 0;
 
@@ -365,15 +432,15 @@
 
       document.getElementById('fid-dias-atraso-lbl').innerText = `${diasAtraso} días`;
 
-      // FIDESON core calculation:
-      // 1. Daily rate unrounded
+      // FIDESON core daily fee rounding rule:
+      // 1. Daily rate unrounded = (tasaMoraAnual / 100) / baseDias
       const tasaDiaria = (tasaMoraAnual / 100) / baseDias;
       
-      // 2. FIDESON daily fee rounded to 2 decimal places ($1.3886 -> $1.39)
+      // 2. FIDESON daily fee rounded to 2 decimal places ($2083 * 0.24 / 360 = $1.38866 -> $1.39)
       const cuotaDiaria = Math.round((capital * tasaDiaria) * 100) / 100;
       document.getElementById('lbl-cuota-diaria').innerText = fmt.format(cuotaDiaria);
 
-      // 3. Accumulated moratory fee
+      // 3. Total accumulated moratory fee
       const moratorioTotal = cuotaDiaria * diasAtraso;
       const ivaMoratorio = moratorioTotal * (aplicaIva / 100);
       const totalVencido = capital + ordinario + moratorioTotal + ivaMoratorio;
@@ -384,25 +451,25 @@
       document.getElementById('card-moratorio').innerText = fmt.format(moratorioTotal);
       document.getElementById('card-total').innerText = fmt.format(totalVencido);
 
-      // Build Day-by-Day Table
+      // Populate Day-by-Day Table
       const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
       let tbody = document.getElementById('fid-tabla-body');
       tbody.innerHTML = '';
 
-      // First row: Ordinary interest reference if exists
+      // First row: Ordinary interest reference if present
       if (ordinario > 0) {
         let trOrd = document.createElement('tr');
-        trOrd.className = "bg-gray-50 font-medium";
+        trOrd.className = "bg-amber-50/50 font-medium";
         trOrd.innerHTML = `
-          <td class="p-2.5">${monthNames[dtVenc.getMonth()]}</td>
-          <td class="p-2.5">${dtVenc.getFullYear()}</td>
-          <td class="p-2.5">${formatDate(dtVenc)}</td>
-          <td class="p-2.5 text-gray-700 font-semibold">Ordinario</td>
-          <td class="p-2.5 text-right">${fmt.format(25000)}</td>
-          <td class="p-2.5 text-center">12.00%</td>
-          <td class="p-2.5 text-center">24.00</td>
-          <td class="p-2.5 text-right font-semibold">${fmt.format(ordinario)}</td>
-          <td class="p-2.5 text-right font-semibold">${fmt.format(ordinario)}</td>
+          <td class="p-3 text-gray-700">${monthNames[dtVenc.getMonth()]}</td>
+          <td class="p-3 text-gray-700">${dtVenc.getFullYear()}</td>
+          <td class="p-3 text-gray-800 font-medium">${formatDate(dtVenc)}</td>
+          <td class="p-3 text-amber-800 font-bold"><span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded">Ordinario</span></td>
+          <td class="p-3 text-right font-medium">${fmt.format(insoluto || 25000)}</td>
+          <td class="p-3 text-center">${tasaOrdAnual.toFixed(2)}%</td>
+          <td class="p-3 text-center">24.00</td>
+          <td class="p-3 text-right font-bold text-gray-800">${fmt.format(ordinario)}</td>
+          <td class="p-3 text-right font-bold text-gray-800">${fmt.format(ordinario)}</td>
         `;
         tbody.appendChild(trOrd);
       }
@@ -416,22 +483,113 @@
         acumuladoMora += cuotaDiaria;
 
         let tr = document.createElement('tr');
+        tr.className = i % 2 === 0 ? 'bg-gray-50/60' : 'bg-white';
         tr.innerHTML = `
-          <td class="p-2.5 text-gray-600">${monthNames[currDate.getMonth()]}</td>
-          <td class="p-2.5 text-gray-600">${currDate.getFullYear()}</td>
-          <td class="p-2.5 font-medium">${formatDate(currDate)}</td>
-          <td class="p-2.5 text-red-600 font-semibold">Moratorio</td>
-          <td class="p-2.5 text-right">${fmt.format(capital)}</td>
-          <td class="p-2.5 text-center">${tasaMoraAnual.toFixed(2)}%</td>
-          <td class="p-2.5 text-center">1.00</td>
-          <td class="p-2.5 text-right">${fmt.format(cuotaDiaria)}</td>
-          <td class="p-2.5 text-right font-bold text-gray-800">${fmt.format(cuotaDiaria)}</td>
+          <td class="p-3 text-gray-600">${monthNames[currDate.getMonth()]}</td>
+          <td class="p-3 text-gray-600">${currDate.getFullYear()}</td>
+          <td class="p-3 font-medium text-gray-800">${formatDate(currDate)}</td>
+          <td class="p-3 text-red-600 font-bold"><span class="bg-red-50 text-red-700 border border-red-100 px-2 py-0.5 rounded">Moratorio</span></td>
+          <td class="p-3 text-right font-medium">${fmt.format(capital)}</td>
+          <td class="p-3 text-center">${tasaMoraAnual.toFixed(2)}%</td>
+          <td class="p-3 text-center">1.00</td>
+          <td class="p-3 text-right font-semibold text-gray-800">${fmt.format(cuotaDiaria)}</td>
+          <td class="p-3 text-right font-bold text-fideson-burgundy">${fmt.format(acumuladoMora)}</td>
         `;
         tbody.appendChild(tr);
       }
+
+      // Re-trigger payment waterfall simulation
+      simularAplicacionPago();
     }
 
-    // Helper Date Format
+    // Payment Application Waterfall (Prelación de Pagos)
+    function simularAplicacionPago() {
+      const pagoIngresado = parseFloat(document.getElementById('fid-pago-ingresado').value) || 0;
+      const capital = parseFloat(document.getElementById('fid-capital').value) || 0;
+      const ordinario = parseFloat(document.getElementById('fid-ordinario').value) || 0;
+      const moratorioText = document.getElementById('card-moratorio').innerText;
+      const moratorioTotal = parseFloat(moratorioText.replace(/[^0-9.-]+/g, "")) || 0;
+      const aplicaIva = parseFloat(document.getElementById('fid-aplica-iva').value) || 0;
+
+      const ivaMoratorio = moratorioTotal * (aplicaIva / 100);
+      const ivaOrdinario = 0; // FIDESON programs typically exempt
+
+      let remanente = pagoIngresado;
+
+      // Waterfall step calculations
+      const cubiertoIvaMora = Math.min(remanente, ivaMoratorio);
+      remanente -= cubiertoIvaMora;
+
+      const cubiertoMora = Math.min(remanente, moratorioTotal);
+      remanente -= cubiertoMora;
+
+      const cubiertoIvaOrd = Math.min(remanente, ivaOrdinario);
+      remanente -= cubiertoIvaOrd;
+
+      const cubiertoOrd = Math.min(remanente, ordinario);
+      remanente -= cubiertoOrd;
+
+      const cubiertoCap = Math.min(remanente, capital);
+      remanente -= cubiertoCap;
+
+      const totalDeudaVencida = capital + ordinario + moratorioTotal + ivaMoratorio;
+
+      // Render Waterfall Cards
+      const waterfallGrid = document.getElementById('prelacion-grid');
+      waterfallGrid.innerHTML = `
+        <div class="p-3 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">1. IVA Moratorio</p>
+          <p class="font-bold text-gray-800 mt-1">${fmt.format(cubiertoIvaMora)} / ${fmt.format(ivaMoratorio)}</p>
+          <p class="text-[10px] ${cubiertoIvaMora >= ivaMoratorio ? 'text-emerald-600' : 'text-amber-600'} font-semibold mt-0.5">
+            ${cubiertoIvaMora >= ivaMoratorio ? 'Cubierto' : 'Pendiente'}
+          </p>
+        </div>
+        <div class="p-3 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">2. Int. Moratorio</p>
+          <p class="font-bold text-gray-800 mt-1">${fmt.format(cubiertoMora)} / ${fmt.format(moratorioTotal)}</p>
+          <p class="text-[10px] ${cubiertoMora >= moratorioTotal ? 'text-emerald-600' : 'text-amber-600'} font-semibold mt-0.5">
+            ${cubiertoMora >= moratorioTotal ? 'Cubierto' : 'Pendiente'}
+          </p>
+        </div>
+        <div class="p-3 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">3. IVA Ordinario</p>
+          <p class="font-bold text-gray-800 mt-1">${fmt.format(cubiertoIvaOrd)} / ${fmt.format(ivaOrdinario)}</p>
+          <p class="text-[10px] text-emerald-600 font-semibold mt-0.5">Cubierto</p>
+        </div>
+        <div class="p-3 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">4. Int. Ordinario</p>
+          <p class="font-bold text-gray-800 mt-1">${fmt.format(cubiertoOrd)} / ${fmt.format(ordinario)}</p>
+          <p class="text-[10px] ${cubiertoOrd >= ordinario ? 'text-emerald-600' : 'text-amber-600'} font-semibold mt-0.5">
+            ${cubiertoOrd >= ordinario ? 'Cubierto' : 'Pendiente'}
+          </p>
+        </div>
+        <div class="p-3 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
+          <p class="text-[10px] text-gray-400 uppercase font-bold">5. Capital Vencido</p>
+          <p class="font-bold text-gray-800 mt-1">${fmt.format(cubiertoCap)} / ${fmt.format(capital)}</p>
+          <p class="text-[10px] ${cubiertoCap >= capital ? 'text-emerald-600' : 'text-amber-600'} font-semibold mt-0.5">
+            ${cubiertoCap >= capital ? 'Cubierto' : 'Pendiente'}
+          </p>
+        </div>
+      `;
+
+      // Status banner update
+      const banner = document.getElementById('pago-remanente-banner');
+      const bannerTxt = document.getElementById('pago-remanente-txt');
+
+      if (pagoIngresado >= totalDeudaVencida) {
+        const sobras = pagoIngresado - totalDeudaVencida;
+        banner.className = "text-xs p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium flex justify-between items-center";
+        bannerTxt.innerHTML = sobras > 0 
+          ? `Deuda vencida cubierta al 100%. Saldo a favor para abonar a capital vigente: <strong>${fmt.format(sobras)}</strong>`
+          : `Pago exacto cubre el 100% de la cuota vencida (${fmt.format(totalDeudaVencida)}).`;
+      } else {
+        const faltante = totalDeudaVencida - pagoIngresado;
+        banner.className = "text-xs p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 font-medium flex justify-between items-center";
+        bannerTxt.innerHTML = `Pago parcial. Cubre ${fmt.format(pagoIngresado)}. Queda un saldo restante vencido de <strong>${fmt.format(faltante)}</strong>.`;
+      }
+    }
+
+    // Helper Date Formatter
     function formatDate(dt) {
       const day = String(dt.getDate()).padStart(2, '0');
       const month = String(dt.getMonth() + 1).padStart(2, '0');
@@ -439,7 +597,7 @@
       return `${day}/${month}/${year}`;
     }
 
-    // Simple Interest Calculator
+    // Simple Interest Engine
     function calcularSimple() {
       const capital = parseFloat(document.getElementById('simp-capital').value) || 0;
       const tasa = parseFloat(document.getElementById('simp-tasa').value) || 0;
@@ -453,7 +611,7 @@
       document.getElementById('simp-res-total').innerText = fmt.format(total);
     }
 
-    // Compound Interest Calculator
+    // Compound Interest Engine
     function calcularCompuesto() {
       const inicial = parseFloat(document.getElementById('comp-inicial').value) || 0;
       const aportacion = parseFloat(document.getElementById('comp-aportacion').value) || 0;
@@ -476,10 +634,10 @@
         if (m <= 12 || m % 6 === 0 || m === totalMeses) {
           let tr = document.createElement('tr');
           tr.innerHTML = `
-            <td class="p-2.5">Mes ${m}</td>
+            <td class="p-2.5 font-medium">Mes ${m}</td>
             <td class="p-2.5 text-right">${fmt.format(totalAportado)}</td>
-            <td class="p-2.5 text-right text-fideson-green">${fmt.format(interesMes)}</td>
-            <td class="p-2.5 text-right font-bold">${fmt.format(saldo)}</td>
+            <td class="p-2.5 text-right font-semibold text-fideson-burgundy">${fmt.format(interesMes)}</td>
+            <td class="p-2.5 text-right font-bold text-gray-800">${fmt.format(saldo)}</td>
           `;
           tbody.appendChild(tr);
         }
@@ -490,7 +648,7 @@
       document.getElementById('comp-res-total').innerText = fmt.format(saldo);
     }
 
-    // Initialize default calculation on load
+    // Window Load Initialization
     window.onload = function() {
       calcularFideson();
       calcularSimple();
