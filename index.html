@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Financiera Completa</title>
+  <title>Calculadora Financiera - Estilo FIDESON</title>
   <style>
     :root {
       --primary: #10b981;
@@ -208,17 +208,17 @@
 
     <!-- Tabs Navigation -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('mora')">Interés Moratorio</button>
-      <button class="tab-btn" onclick="switchTab('simple')">Interés Simple</button>
-      <button class="tab-btn" onclick="switchTab('compuesto')">Interés Compuesto</button>
+      <button class="tab-btn active" onclick="switchTab(event, 'mora')">Interés Moratorio</button>
+      <button class="tab-btn" onclick="switchTab(event, 'simple')">Interés Simple</button>
+      <button class="tab-btn" onclick="switchTab(event, 'compuesto')">Interés Compuesto</button>
     </div>
 
-    <!-- 1. TAB MORATORIO -->
+    <!-- 1. TAB MORATORIO (Lógica FIDESON) -->
     <div id="mora" class="tab-content active">
       <div class="form-grid">
         <div class="form-group">
-          <label for="mora-monto">Monto Vencido / Cuota ($)</label>
-          <input type="number" id="mora-monto" placeholder="Ej. 10000" value="10000">
+          <label for="mora-monto">Capital Vencido ($)</label>
+          <input type="number" id="mora-monto" placeholder="Ej. 2083" value="2083">
         </div>
         <div class="form-group">
           <label for="mora-tasa">Tasa Moratoria Anual (%)</label>
@@ -226,20 +226,20 @@
         </div>
         <div class="form-group">
           <label for="mora-dias">Días de Atraso</label>
-          <input type="number" id="mora-dias" placeholder="Ej. 15" value="15">
+          <input type="number" id="mora-dias" placeholder="Ej. 6" value="6">
         </div>
         <div class="form-group">
           <label for="mora-base">Base Comercial (Días/Año)</label>
           <select id="mora-base">
-            <option value="360" selected>360 Días (Comercial/Bancaria)</option>
+            <option value="360" selected>360 Días (FIDESON/Comercial)</option>
             <option value="365">365 Días (Año Natural)</option>
           </select>
         </div>
         <div class="form-group">
           <label for="mora-iva">Aplica IVA a Intereses</label>
           <select id="mora-iva">
-            <option value="16" selected>Sí (16%)</option>
-            <option value="0">No (0%)</option>
+            <option value="0" selected>No (0% - Exento/FIDESON)</option>
+            <option value="16">Sí (16%)</option>
           </select>
         </div>
       </div>
@@ -255,7 +255,7 @@
         </div>
         <div class="form-group">
           <label for="simple-tasa">Tasa de Interés Anual (%)</label>
-          <input type="number" id="simple-tasa" placeholder="Ej. 10" value="10">
+          <input type="number" id="simple-tasa" placeholder="Ej. 12" value="12">
         </div>
         <div class="form-group">
           <label for="simple-tiempo">Plazo (Meses)</label>
@@ -296,20 +296,20 @@
   </div>
 
   <script>
-    // Formateador de Moneda
+    // Formateador de Moneda MXN
     const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 
     // Cambiar entre pestañas
-    function switchTab(tabId) {
+    function switchTab(evt, tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      event.target.classList.add('active');
+      evt.currentTarget.classList.add('active');
       document.getElementById(tabId).classList.add('active');
       document.getElementById('results').style.display = 'none';
     }
 
-    // CÁLCULO DE INTERÉS MORATORIO
+    // CÁLCULO DE INTERÉS MORATORIO (LÓGICA FIDESON)
     function calcularMoratorio() {
       const monto = parseFloat(document.getElementById('mora-monto').value) || 0;
       const tasaAnual = parseFloat(document.getElementById('mora-tasa').value) || 0;
@@ -317,8 +317,17 @@
       const baseDias = parseFloat(document.getElementById('mora-base').value) || 360;
       const ivaPct = parseFloat(document.getElementById('mora-iva').value) || 0;
 
+      // 1. Tasa diaria exacta
       const tasaDiaria = (tasaAnual / 100) / baseDias;
-      const interesMoratorio = monto * tasaDiaria * dias;
+      
+      // 2. Importe diario redondeado a 2 decimales (estilo FIDESON)
+      const cuotaDiariaSinRedondeo = monto * tasaDiaria;
+      const cuotaDiariaRedondeada = Math.round(cuotaDiariaSinRedondeo * 100) / 100; // $1.39
+
+      // 3. Moratorio acumulado por los días de atraso
+      const interesMoratorio = cuotaDiariaRedondeada * dias; // $1.39 * 6 = $8.34
+      
+      // 4. IVA (si aplica)
       const iva = interesMoratorio * (ivaPct / 100);
       const totalPagar = monto + interesMoratorio + iva;
 
@@ -380,7 +389,6 @@
         totalAportado += aportacion;
         totalInteres += interesMes;
 
-        // Mostrar solo filas principales o cada 6 meses si es muy largo
         if (totalMeses <= 24 || m % 6 === 0 || m === totalMeses) {
           tablaHTML += `
             <tr>
