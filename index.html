@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora Crédito FIDESON - Automática</title>
+  <title>Sistema de Gestión y Cálculo de Créditos</title>
   <style>
     :root {
-      --fideson-burgundy: #800020;
-      --fideson-gold: #c5a059;
-      --bg: #f4f6f8;
+      --primary-color: #1e3a8a;
+      --secondary-color: #0284c7;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text: #1f2937;
-      --border: #e5e7eb;
+      --text-color: #0f172a;
+      --border-color: #e2e8f0;
+      --danger-color: #991b1b;
+      --success-color: #166534;
     }
 
     * {
@@ -22,8 +24,8 @@
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
       display: flex;
       justify-content: center;
@@ -32,52 +34,52 @@
 
     .container {
       width: 100%;
-      max-width: 950px;
+      max-width: 1000px;
       background: var(--card-bg);
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
       padding: 30px;
-      border-top: 6px solid var(--fideson-burgundy);
+      border-top: 6px solid var(--primary-color);
     }
 
-    .header-fideson {
+    .header-system {
       text-align: center;
       margin-bottom: 25px;
-      border-bottom: 2px solid var(--border);
+      border-bottom: 2px solid var(--border-color);
       padding-bottom: 15px;
     }
 
-    .header-fideson h1 {
+    .header-system h1 {
       font-size: 1.6rem;
-      color: var(--fideson-burgundy);
+      color: var(--primary-color);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .header-fideson p {
+    .header-system p {
       font-size: 0.9rem;
-      color: #6b7280;
+      color: #64748b;
     }
 
     /* Form Grid */
     .section-title {
       font-size: 1.1rem;
       font-weight: 700;
-      color: var(--fideson-burgundy);
+      color: var(--primary-color);
       margin-bottom: 15px;
-      border-left: 4px solid var(--fideson-gold);
+      border-left: 4px solid var(--secondary-color);
       padding-left: 10px;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
       margin-bottom: 25px;
-      background: #fafafa;
+      background: #f1f5f9;
       padding: 20px;
       border-radius: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
     }
 
     .form-group {
@@ -89,33 +91,40 @@
     label {
       font-size: 0.85rem;
       font-weight: 600;
-      color: #374151;
+      color: #334155;
     }
 
     input, select {
       padding: 10px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
       border-radius: 6px;
       font-size: 0.95rem;
       outline: none;
       transition: border-color 0.2s;
+      background: white;
     }
 
     input:focus, select:focus {
-      border-color: var(--fideson-burgundy);
+      border-color: var(--primary-color);
+    }
+
+    input[readonly] {
+      background-color: #e2e8f0;
+      color: #475569;
+      cursor: not-allowed;
     }
 
     /* Cards Results */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 15px;
       margin-bottom: 25px;
     }
 
     .card {
       background: #fff;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 15px;
       text-align: center;
@@ -123,8 +132,8 @@
     }
 
     .card.highlight {
-      background: #fdf8f0;
-      border-color: var(--fideson-gold);
+      background: #f0f9ff;
+      border-color: var(--secondary-color);
     }
 
     .card.danger {
@@ -134,7 +143,7 @@
 
     .card-title {
       font-size: 0.75rem;
-      color: #6b7280;
+      color: #64748b;
       margin-bottom: 5px;
       text-transform: uppercase;
       font-weight: 600;
@@ -143,14 +152,14 @@
     .card-value {
       font-size: 1.3rem;
       font-weight: 700;
-      color: var(--fideson-burgundy);
+      color: var(--primary-color);
     }
 
     /* Table */
     .table-wrapper {
-      max-height: 280px;
+      max-height: 320px;
       overflow-y: auto;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       margin-bottom: 25px;
     }
@@ -164,11 +173,11 @@
 
     th, td {
       padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-color);
     }
 
     th {
-      background-color: var(--fideson-burgundy);
+      background-color: var(--primary-color);
       color: white;
       position: sticky;
       top: 0;
@@ -176,10 +185,10 @@
     }
 
     tr:nth-child(even) {
-      background-color: #f9fafb;
+      background-color: #f8fafc;
     }
 
-    /* WaterFall Section */
+    /* Waterfall Section */
     .prelacion-box {
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
@@ -189,7 +198,7 @@
 
     .prelacion-box h3 {
       font-size: 1rem;
-      color: #166534;
+      color: var(--success-color);
       margin-bottom: 12px;
     }
 
@@ -212,12 +221,12 @@
 <body>
 
   <div class="container">
-    <div class="header-fideson">
-      <h1>Financiera para el Desarrollo Económico de Sonora</h1>
+    <div class="header-system">
+      <h1>Sistema de Gestión y Cálculo de Créditos</h1>
       <p>Calculadora Automática de Estado de Cuenta y Aplicación de Pagos</p>
     </div>
 
-    <!-- DATOS DEL CRÉDITO -->
+    <!-- 1. DATOS DEL CRÉDITO -->
     <div class="section-title">1. Datos Básicos del Crédito</div>
     <div class="form-grid">
       <div class="form-group">
@@ -241,20 +250,28 @@
         <input type="number" id="tasa-moratoria" value="24" step="0.1" oninput="calcularTodo()">
       </div>
       <div class="form-group">
+        <label for="fecha-corte-anterior">Fecha de Corte / Pago Anterior</label>
+        <input type="date" id="fecha-corte-anterior" value="2026-08-25" onchange="calcularTodo()">
+      </div>
+      <div class="form-group">
         <label for="fecha-vencimiento">Fecha de Vencimiento</label>
         <input type="date" id="fecha-vencimiento" value="2026-09-17" onchange="calcularTodo()">
       </div>
       <div class="form-group">
-        <label for="fecha-corte">Fecha de Corte / Pago</label>
+        <label for="fecha-corte">Fecha de Corte / Pago Actual</label>
         <input type="date" id="fecha-corte" value="2026-09-23" onchange="calcularTodo()">
       </div>
       <div class="form-group">
-        <label for="dias-periodo">Días Periodo Ordinario</label>
-        <input type="number" id="dias-periodo" value="24" oninput="calcularTodo()">
+        <label for="dias-periodo">Días Periodo Ordinario (Auto)</label>
+        <input type="number" id="dias-periodo" value="24" readonly>
+      </div>
+      <div class="form-group">
+        <label for="dias-atraso">Días de Atraso (Auto)</label>
+        <input type="number" id="dias-atraso" value="6" readonly>
       </div>
     </div>
 
-    <!-- RESUMEN AUTOMÁTICO DE SALDOS -->
+    <!-- 2. RESUMEN AUTOMÁTICO DE SALDOS -->
     <div class="section-title">2. Resumen de Saldos Calculados</div>
     <div class="cards-grid">
       <div class="card">
@@ -262,36 +279,38 @@
         <div class="card-value" id="out-capital">$0.00</div>
       </div>
       <div class="card">
-        <div class="card-title">Interés Ordinario (12%)</div>
+        <div class="card-title">Interés Ordinario</div>
         <div class="card-value" id="out-ordinario">$0.00</div>
       </div>
       <div class="card danger">
-        <div class="card-title">Interés Moratorio (24%)</div>
-        <div class="card-value" id="out-moratorio">$0.00</div>
+        <div class="card-title">Interés Moratorio</div>
+        <div class="card-value" style="color: var(--danger-color);" id="out-moratorio">$0.00</div>
       </div>
       <div class="card highlight">
         <div class="card-title">Total Pendiente Vencido</div>
         <div class="card-value" id="out-total-vencido">$0.00</div>
       </div>
       <div class="card">
-        <div class="card-title">Interés Oportuno (6%)</div>
-        <div class="card-value" style="color: #2563eb;" id="out-oportuno">$0.00</div>
+        <div class="card-title">Interés Oportuno</div>
+        <div class="card-value" style="color: var(--secondary-color);" id="out-oportuno">$0.00</div>
       </div>
     </div>
 
-    <!-- TABLA DE DESGLOSE POR AMORTIZACIÓN -->
+    <!-- 3. TABLA DE DESGLOSE COMPLETA -->
     <div class="section-title">3. Tabla de Desglose Diario (Intereses por Amortización)</div>
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>Fecha</th>
+            <th>Mes</th>
+            <th>Año</th>
+            <th>Fecha Calculado</th>
             <th>Tipo Interés</th>
             <th>Importe Base</th>
-            <th>Tasa</th>
-            <th>Días</th>
-            <th>Importe Diario</th>
-            <th>Saldo Acumulado</th>
+            <th>Tasa Cálculo</th>
+            <th>Días Calculados</th>
+            <th>Importe Calculado</th>
+            <th>Saldo Calculado</th>
           </tr>
         </thead>
         <tbody id="tabla-intereses">
@@ -300,7 +319,7 @@
       </table>
     </div>
 
-    <!-- SIMULADOR DE APLICACIÓN DE PAGO -->
+    <!-- 4. SIMULADOR DE APLICACIÓN DE PAGO -->
     <div class="section-title">4. Simulador de Aplicación de Pago (Orden de Prelación)</div>
     <div class="form-grid" style="grid-template-columns: 1fr 2fr;">
       <div class="form-group">
@@ -321,83 +340,108 @@
     const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 
     function calcularTodo() {
-      // Leer Valores
+      // Leer entradas de números
       const saldoDispuesto = parseFloat(document.getElementById('saldo-dispuesto').value) || 0;
       const capitalVencido = parseFloat(document.getElementById('capital-vencido').value) || 0;
       const tasaOrdinaria = parseFloat(document.getElementById('tasa-ordinaria').value) || 0;
       const tasaOportuna = parseFloat(document.getElementById('tasa-oportuna').value) || 0;
       const tasaMoratoria = parseFloat(document.getElementById('tasa-moratoria').value) || 0;
-      const diasPeriodo = parseFloat(document.getElementById('dias-periodo').value) || 24;
 
-      const fVenc = new Date(document.getElementById('fecha-vencimiento').value + 'T00:00:00');
-      const fCorte = new Date(document.getElementById('fecha-corte').value + 'T00:00:00');
+      // Leer Fechas
+      const fCorteAntInput = document.getElementById('fecha-corte-anterior').value;
+      const fVencInput = document.getElementById('fecha-vencimiento').value;
+      const fCorteInput = document.getElementById('fecha-corte').value;
 
-      // 1. Calcular Días de Atraso Exactos
+      const fCorteAnt = new Date(fCorteAntInput + 'T00:00:00');
+      const fVenc = new Date(fVencInput + 'T00:00:00');
+      const fCorte = new Date(fCorteInput + 'T00:00:00');
+
+      // 1. CÁLCULO AUTOMÁTICO DE DÍAS
+      // Días del Periodo Ordinario (Corte Anterior -> Vencimiento)
+      let diasPeriodo = Math.round((fVenc - fCorteAnt) / (1000 * 60 * 60 * 24));
+      if (diasPeriodo <= 0) diasPeriodo = 30;
+      document.getElementById('dias-periodo').value = diasPeriodo;
+
+      // Días de Atraso (Vencimiento -> Corte Actual)
       let diasAtraso = Math.round((fCorte - fVenc) / (1000 * 60 * 60 * 24));
       if (diasAtraso < 0) diasAtraso = 0;
+      document.getElementById('dias-atraso').value = diasAtraso;
 
-      // 2. Calcular Interés Ordinario ($25,000 * 12% * 24 / 360 = $200.00)
+      // 2. CÁLCULO DE INTERESES
+      // Interés Ordinario ($25,000 * 12% * 24 / 360 = $200.00)
       const intOrdinario = (saldoDispuesto * (tasaOrdinaria / 100) * diasPeriodo) / 360;
 
-      // 3. Calcular Interés Oportuno ($25,000 * 6% * 24 / 360 = $100.00 aprox)
+      // Interés Oportuno ($25,000 * 6% * 24 / 360 = $100.00)
       const intOportuno = (saldoDispuesto * (tasaOportuna / 100) * diasPeriodo) / 360;
 
-      // 4. Calcular Interés Moratorio Diario y Redondearlo ($2,083 * 24% / 360 = $1.3886 -> $1.39)
+      // Cuota Diaria Moratoria con redondeo diario a 2 decimales ($2,083 * 24% / 360 = $1.3886 -> $1.39)
       const cuotaDiariaSinRedondeo = (capitalVencido * (tasaMoratoria / 100)) / 360;
       const cuotaDiariaRedondeada = Math.round(cuotaDiariaSinRedondeo * 100) / 100;
       const intMoratorioTotal = cuotaDiariaRedondeada * diasAtraso;
 
-      // 5. Total Pendiente Vencido
       const totalVencido = capitalVencido + intOrdinario + intMoratorioTotal;
 
-      // Actualizar Tarjetas
+      // Actualizar Tarjetas de Resumen
       document.getElementById('out-capital').innerText = fmt.format(capitalVencido);
       document.getElementById('out-ordinario').innerText = fmt.format(intOrdinario);
       document.getElementById('out-moratorio').innerText = fmt.format(intMoratorioTotal);
       document.getElementById('out-total-vencido').innerText = fmt.format(totalVencido);
       document.getElementById('out-oportuno').innerText = fmt.format(intOportuno);
 
-      // Generar Tabla "Intereses por Amortización"
-      generarTabla(fVenc, intOrdinario, saldoDispuesto, capitalVencido, tasaOrdinaria, tasaMoratoria, diasPeriodo, diasAtraso, cuotaDiariaRedondeada);
+      // Generar Tabla Completa por Día
+      generarTabla(fCorteAnt, fVenc, intOrdinario, saldoDispuesto, capitalVencido, tasaOrdinaria, tasaMoratoria, diasPeriodo, diasAtraso, cuotaDiariaRedondeada);
 
       // Actualizar Simulador de Pago
       simularPago();
     }
 
-    function generarTabla(fVenc, intOrdinario, saldoDispuesto, capitalVencido, tasaOrdinaria, tasaMoratoria, diasPeriodo, diasAtraso, cuotaDiaria) {
+    function generarTabla(fCorteAnt, fVenc, intOrdinario, saldoDispuesto, capitalVencido, tasaOrdinaria, tasaMoratoria, diasPeriodo, diasAtraso, cuotaDiaria) {
       const tbody = document.getElementById('tabla-intereses');
       tbody.innerHTML = '';
 
-      // Renglón Ordinario Base
-      let fechaOrdStr = fVenc.toLocaleDateString('es-MX');
+      const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+      // FILA 1: Interés Ordinario del Periodo
+      const mesOrd = nombresMeses[fCorteAnt.getMonth()];
+      const anioOrd = fCorteAnt.getFullYear();
+      const fechaOrdStr = padZero(fCorteAnt.getDate()) + '/' + padZero(fCorteAnt.getMonth() + 1) + '/' + anioOrd;
+
       tbody.innerHTML += `
         <tr>
+          <td>${mesOrd}</td>
+          <td>${anioOrd}</td>
           <td>${fechaOrdStr}</td>
           <td><b>Ordinario</b></td>
           <td>${fmt.format(saldoDispuesto)}</td>
           <td>${tasaOrdinaria.toFixed(2)}%</td>
-          <td>${diasPeriodo}.00</td>
+          <td>${diasPeriodo.toFixed(2)}</td>
           <td>${fmt.format(intOrdinario)}</td>
-          <td>${fmt.format(intOrdinario)}</td>
+          <td><b>${fmt.format(intOrdinario)}</b></td>
         </tr>
       `;
 
-      // Renglones Moratorios Diarios
+      // FILAS MORATORIAS DIARIAS
       let acumuladoMora = 0;
       for (let i = 1; i <= diasAtraso; i++) {
         let fechaDia = new Date(fVenc);
         fechaDia.setDate(fechaDia.getDate() + i);
+
         acumuladoMora += cuotaDiaria;
+        const mesMora = nombresMeses[fechaDia.getMonth()];
+        const anioMora = fechaDia.getFullYear();
+        const fechaMoraStr = padZero(fechaDia.getDate()) + '/' + padZero(fechaDia.getMonth() + 1) + '/' + anioMora;
 
         tbody.innerHTML += `
           <tr>
-            <td>${fechaDia.toLocaleDateString('es-MX')}</td>
-            <td style="color: #b91c1c;"><b>Moratorio</b></td>
+            <td>${mesMora}</td>
+            <td>${anioMora}</td>
+            <td>${fechaMoraStr}</td>
+            <td style="color: var(--danger-color);"><b>Moratorio</b></td>
             <td>${fmt.format(capitalVencido)}</td>
             <td>${tasaMoratoria.toFixed(2)}%</td>
             <td>1.00</td>
             <td>${fmt.format(cuotaDiaria)}</td>
-            <td>${fmt.format(acumuladoMora)}</td>
+            <td><b>${fmt.format(acumuladoMora)}</b></td>
           </tr>
         `;
       }
@@ -410,18 +454,15 @@
       const saldoDispuesto = parseFloat(document.getElementById('saldo-dispuesto').value) || 0;
       const tasaOrdinaria = parseFloat(document.getElementById('tasa-ordinaria').value) || 0;
       const tasaMoratoria = parseFloat(document.getElementById('tasa-moratoria').value) || 0;
-      const diasPeriodo = parseFloat(document.getElementById('dias-periodo').value) || 24;
-
-      const fVenc = new Date(document.getElementById('fecha-vencimiento').value + 'T00:00:00');
-      const fCorte = new Date(document.getElementById('fecha-corte').value + 'T00:00:00');
-      let diasAtraso = Math.round((fCorte - fVenc) / (1000 * 60 * 60 * 24));
-      if (diasAtraso < 0) diasAtraso = 0;
+      
+      const diasPeriodo = parseFloat(document.getElementById('dias-periodo').value) || 0;
+      const diasAtraso = parseFloat(document.getElementById('dias-atraso').value) || 0;
 
       const intOrdinario = (saldoDispuesto * (tasaOrdinaria / 100) * diasPeriodo) / 360;
       const cuotaDiaria = Math.round(((capital * (tasaMoratoria / 100)) / 360) * 100) / 100;
       const intMoratorio = cuotaDiaria * diasAtraso;
 
-      // Prelación FIDESON
+      // Distribución por Orden de Prelación
       let cubiertoMora = Math.min(pagoDisponible, intMoratorio);
       pagoDisponible -= cubiertoMora;
 
@@ -445,14 +486,18 @@
           <span>3. Capital Vencido (Abonado / Total):</span>
           <strong>${fmt.format(cubiertoCapital)} / ${fmt.format(capital)}</strong>
         </li>
-        <li class="prelacion-item" style="border-top: 1px solid #166534; margin-top: 5px; padding-top: 5px;">
+        <li class="prelacion-item" style="border-top: 1px solid var(--success-color); margin-top: 5px; padding-top: 5px;">
           <span>Sobrante / Remanente:</span>
-          <strong style="color: #166534;">${fmt.format(pagoDisponible)}</strong>
+          <strong style="color: var(--success-color);">${fmt.format(pagoDisponible)}</strong>
         </li>
       `;
     }
 
-    // Inicializar cálculo al cargar
+    function padZero(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
+    // Inicializar al cargar la página
     calcularTodo();
   </script>
 </body>
